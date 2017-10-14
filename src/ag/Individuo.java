@@ -69,7 +69,7 @@ public class Individuo implements Comparable<Individuo>{
 		ind.setCamadaEntrada(this.getCamadaEntrada());
 		ind.setCamadaEscondida(this.getCamadaEscondida());
 		ind.setCamadaSaida(this.getCamadaSaida());
-		ind.setFitness(this.getFitness());
+		//ind.setFitness(this.getFitness());
 		return ind;
 	}
 	

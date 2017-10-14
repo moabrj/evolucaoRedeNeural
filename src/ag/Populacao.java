@@ -49,25 +49,28 @@ public class Populacao {
 	
 	public void calcularFitness1Saida(double[][] entradas, int q_linhas) {
 		for(Individuo ind : individuos) {
-			int fitness = 0;
-			for(int i=0; i<q_linhas; i++) {
-				double[] saida = ind.atualizaRede(entradas[i]);
-				
-				//centro
-				if (entradas[i][7] == 0 && saida[0] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 0 && saida[0] != 0)
-                    fitness -= 1;
-				else if (entradas[i][7] == 1 && saida[0] == 1)
-                    fitness += 1;
-				else if (entradas[i][7] == 1 && saida[0] != 1)
-                    fitness -= 1;
-				else if (entradas[i][7] == -1 && saida[0] == -1)
-                    fitness += 1;
-				else if (entradas[i][7] == -1 && saida[0] != -1)
-                    fitness -= 1;
+			if(ind.getFitness() == -999)
+			{
+				int fitness = 0;
+				for(int i=0; i<q_linhas; i++) {
+					double[] saida = ind.atualizaRede(entradas[i]);
+					
+					//centro
+					if (entradas[i][7] == 0 && saida[0] == 0)
+	                    fitness += 1;
+					else if (entradas[i][7] == 0 && saida[0] != 0)
+	                    fitness -= 1;
+					else if (entradas[i][7] == 1 && saida[0] == 1)
+	                    fitness += 1;
+					else if (entradas[i][7] == 1 && saida[0] != 1)
+	                    fitness -= 1;
+					else if (entradas[i][7] == -1 && saida[0] == -1)
+	                    fitness += 1;
+					else if (entradas[i][7] == -1 && saida[0] != -1)
+	                    fitness -= 1;
+				}
+				ind.setFitness(fitness);
 			}
-			ind.setFitness(fitness);
 		}
 	}
 	
