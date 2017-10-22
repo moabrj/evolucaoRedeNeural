@@ -7,14 +7,17 @@ import geral.Config;
 public class Neuronio {
 	
 	private double pesos[];
-	private double tau = 0.2;
+	private double tau;
 	private double somaAnt = 0;
 	private boolean recorrencia = false;
 	private boolean tipo_entrada = false; //se true é ativo será neuronio de entrada
 	private int funcaoAtivacao = 1;
 	
 	
-	private Neuronio() {}
+	private Neuronio() {
+		Random r = Config.random;
+		this.tau = r.nextDouble();
+	}
 	
 	/**
 	 * O número de pesos deve ser igual ao número de entradas
@@ -26,6 +29,7 @@ public class Neuronio {
 		this.funcaoAtivacao = tipoFuncaoAtivacao;
 		this.recorrencia = recorrencia;
 		Random r = Config.random;
+		this.tau = r.nextDouble();
 		for(int i=0;i<n_pesos+1;i++)
 		{
 			pesos[i] = Config.LIMITE_MIN + (r.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
@@ -42,6 +46,8 @@ public class Neuronio {
 	public Neuronio(boolean recorrencia) {
 		this.recorrencia = recorrencia;
 		this.tipo_entrada = true;
+		Random r = Config.random;
+		this.tau = r.nextDouble();
 	}
 	
 	public double[] getPesos() throws Exception {
