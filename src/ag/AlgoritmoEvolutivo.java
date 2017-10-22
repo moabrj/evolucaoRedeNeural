@@ -1,12 +1,26 @@
 package ag;
 
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.xy.CategoryTableXYDataset;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
 
 import ann.Neuronio;
 import geral.Config;
@@ -18,6 +32,8 @@ public class AlgoritmoEvolutivo {
 	private Populacao populacao;
 	private FileWriter arq = null;
 	private PrintWriter gravarArq = null;
+	private JFreeChart grafico;
+	private String nomeArquivo;
 	
 	public AlgoritmoEvolutivo() throws IOException {
 		this.leitor = new LeitorCSV();
@@ -27,21 +43,27 @@ public class AlgoritmoEvolutivo {
 		Date dataHoraAtual = new Date();
 		String data = new SimpleDateFormat("dd-MM-yyyy").format(dataHoraAtual);
 		String hora = new SimpleDateFormat("HH-mm-ss").format(dataHoraAtual);
-		String nomeArquivo = "resultados\\"+data+hora+".txt";
-		arq = new FileWriter(nomeArquivo);
+		nomeArquivo = "resultados\\"+data+hora+"-N-"+Config.N_NEURONIOS_ESCONDIDOS;
+		arq = new FileWriter(nomeArquivo+".txt");
 		gravarArq = new PrintWriter(arq);
 		registraCabecalho();
 	}
 	
 	public void evoluir() throws Exception {
 		int cont = 1;
+		CategoryTableXYDataset data = new CategoryTableXYDataset();
 		while(cont <= Config.N_MAX_GERACOES) {
 			this.gravarArq.println("Geração "+cont+"\n\n");
 			//calcula o fitness de todos os individuos da população
-			//this.populacao.calcularFitness(leitor.getEntradas(), leitor.q_linhas);
-			this.populacao.calcularFitness1Saida(leitor.getEntradas(), leitor.q_linhas);
+			if(Config.N_SAIDAS > 1) //para 3 saidas
+				this.populacao.calcularFitness(leitor.getEntradas(), leitor.q_linhas);
+			else
+				this.populacao.calcularFitness1Saida(leitor.getEntradas(), leitor.q_linhas);
 			//salva os dados
 			this.populacao.registrarLogs(gravarArq);
+			//adiciona o melhor na lista de melhores da geração
+			data.add(cont, this.populacao.getMelhorFitness(), "Melhor");
+			data.add(cont, this.populacao.getMediaFitnessPop(), "Média");
 			//seleciona os 10 melhores
 			this.populacao.selecionaMelhores();
 			//verifica andamento
@@ -51,6 +73,12 @@ public class AlgoritmoEvolutivo {
 			cont++;
 		}
 		this.arq.close();
+		grafico = ChartFactory.createXYLineChart("Evolução", "Geração", 
+			    "Fitness", data, PlotOrientation.VERTICAL, true, false, false);
+		
+		OutputStream arquivo = new FileOutputStream(nomeArquivo+".png");
+		ChartUtilities.writeChartAsPNG(arquivo, grafico, 800, 600);
+		arquivo.close();
 	}
 	
 	private void mutacao() throws Exception {

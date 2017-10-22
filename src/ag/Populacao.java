@@ -25,25 +25,28 @@ public class Populacao {
 	
 	public void calcularFitness(double[][] entradas, int q_linhas) {
 		for(Individuo ind : individuos) {
-			int fitness = 0;
-			for(int i=0; i<q_linhas; i++) {
-				double[] saida = ind.atualizaRede(entradas[i]);
-				
-				//centro
-				if (entradas[i][7] == 0 && saida[1] == 1 && saida[0] == 0 && saida[2] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 0 && saida[1] != 1)
-                    fitness -= 1;
-				else if (entradas[i][7] == 1 && saida[2] == 1 && saida[1] == 0 && saida[0] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 1 && saida[2] != 1)
-                    fitness -= 1;
-				else if (entradas[i][7] == -1 && saida[0] == 1 && saida[1] == 0 && saida[2] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == -1 && saida[0] != -1)
-                    fitness -= 1;
+			if(ind.getFitness() == -999)
+			{
+				int fitness = 0;
+				for(int i=0; i<q_linhas; i++) {
+					double[] saida = ind.atualizaRede(entradas[i]);
+					
+					//centro
+					if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0 && saida[2] == 0)
+	                    fitness += 1;
+					else if (entradas[i][7] == 0 && saida[0] != 1)
+	                    fitness -= 1;
+					else if (entradas[i][7] == 1 && saida[1] == 1 && saida[0] == 0 && saida[2] == 0)
+	                    fitness += 1;
+					else if (entradas[i][7] == 1 && saida[1] != 1)
+	                    fitness -= 1;
+					else if (entradas[i][7] == -1 && saida[2] == 1 && saida[0] == 0 && saida[1] == 0)
+	                    fitness += 1;
+					else if (entradas[i][7] == -1 && saida[2] != 1)
+	                    fitness -= 1;
+				}
+				ind.setFitness(fitness);
 			}
-			ind.setFitness(fitness);
 		}
 	}
 	
@@ -98,6 +101,21 @@ public class Populacao {
 		for(Individuo i : individuos) {
 			gravarArq.println(i.toString());
 		}
+	}
+	
+	public double getMelhorFitness()
+	{
+		this.ordenar();
+		return this.individuos.getFirst().getFitness();
+	}
+	
+	public double getMediaFitnessPop()
+	{
+		double media = 0;
+		for(Individuo i : individuos) {
+			media += i.getFitness();
+		}
+		return media/this.individuos.size();
 	}
 
 }
