@@ -5,7 +5,7 @@ import java.util.Random;
 public class Config {
 	
 	public static int N_ENTRADAS = 7;
-	public static int N_NEURONIOS_ESCONDIDOS = 5;
+	public static int N_NEURONIOS_ESCONDIDOS = 10;
 	public static int N_SAIDAS = 1;
 	public static int SEMENTE = 5;
 	
@@ -14,10 +14,10 @@ public class Config {
 	public static double TAXA_MUTACAO = 0.2;
 	public static double LIMITE_MIN = -10;
 	public static double LIMITE_MAX = 10;
-	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\cenario_reduzido.csv";
-	public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\todos.csv";
+	public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\movimento.csv";
+	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\tamanho.csv";
 	public static final Random random = new Random(SEMENTE);
 	
 	public static boolean RECORRENCIA_ENTRADA = true;
-	public static boolean RECORRENCIA_OUTROS = true;
+	public static boolean RECORRENCIA_OUTROS = false;
 }
