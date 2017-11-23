@@ -1,26 +1,42 @@
 package ag;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
+import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.batik.svggen.SVGGraphics2DIOException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 
 import ann.Neuronio;
 import geral.Config;
@@ -32,6 +48,8 @@ public class AlgoritmoEvolutivo {
 	private Populacao populacao;
 	private FileWriter arq = null;
 	private PrintWriter gravarArq = null;
+	private FileWriter arqAtivacao = null;
+	private PrintWriter gravarArqAtivacao = null;
 	private JFreeChart grafico;
 	private String nomeArquivo;
 	
@@ -44,8 +62,13 @@ public class AlgoritmoEvolutivo {
 		String data = new SimpleDateFormat("dd-MM-yyyy").format(dataHoraAtual);
 		String hora = new SimpleDateFormat("HH-mm-ss").format(dataHoraAtual);
 		nomeArquivo = "resultados\\"+data+hora+"-N-"+Config.N_NEURONIOS_ESCONDIDOS;
+		
+		arqAtivacao = new FileWriter(nomeArquivo+"Ativacao"+".txt");
+		gravarArqAtivacao = new PrintWriter(arqAtivacao);
+		
 		arq = new FileWriter(nomeArquivo+".txt");
 		gravarArq = new PrintWriter(arq);
+		
 		registraCabecalho();
 	}
 	
@@ -66,6 +89,10 @@ public class AlgoritmoEvolutivo {
 			data.add(cont, this.populacao.getMediaFitnessPop(), "Média");
 			//seleciona os 10 melhores
 			this.populacao.selecionaMelhores();
+			//salva dados de ativacao do melhor individuo
+			StringBuilder str_ativacao = this.populacao.getAtivacaoMelhor(leitor.getEntradas(), leitor.q_linhas);
+			this.gravarArqAtivacao.println("\n\nGeração "+cont+":");
+			this.gravarArqAtivacao.println(str_ativacao.toString());
 			//verifica andamento
 			System.out.println("Geração "+cont+". Melhor individuo: "+this.populacao.getIndividuos().getFirst().getFitness());
 			//preenche o restante da população com mutações dos melhores
@@ -73,12 +100,11 @@ public class AlgoritmoEvolutivo {
 			cont++;
 		}
 		this.arq.close();
+		this.gravarArqAtivacao.close();
 		grafico = ChartFactory.createXYLineChart("Evolução", "Geração", 
 			    "Fitness", data, PlotOrientation.VERTICAL, true, false, false);
+		this.salvaGrafico();
 		
-		OutputStream arquivo = new FileOutputStream(nomeArquivo+".png");
-		ChartUtilities.writeChartAsPNG(arquivo, grafico, 800, 600);
-		arquivo.close();
 	}
 	
 	private void mutacao() throws Exception {
@@ -165,6 +191,55 @@ public class AlgoritmoEvolutivo {
 				+", Recorrência em outras camadas = "+Config.RECORRENCIA_OUTROS);
 		gravarArq.println("Semente do random: "+Config.SEMENTE);
 		gravarArq.println();
+	}
+	
+	public void export(File name, JFreeChart chart, int x, int y) {
+		// Get a DOMImplementation
+        DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
+        Document document = domImpl.createDocument(null, "svg", null);
+        SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
+        chart.draw(svgGenerator,new Rectangle(x,y));
+              
+
+       boolean useCSS = true; // we want to use CSS style attribute
+        
+            Writer out;
+			try {
+				out = new OutputStreamWriter(new FileOutputStream(name), "UTF-8");
+				svgGenerator.stream(out, useCSS);
+				out.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    }
+	
+	private void salvaGrafico()
+	{
+		try {
+			//configura cor, largura de linha
+			XYPlot chart = grafico.getXYPlot();
+			chart.setBackgroundPaint(null);
+			int seriesCount = chart.getSeriesCount();
+			for (int i = 0; i < seriesCount; i++) {
+				chart.getRenderer().setSeriesStroke(i, new BasicStroke(2));
+			}
+			
+			ValueAxis axisX = chart.getRangeAxis();
+			ValueAxis axisY = chart.getDomainAxis();
+			Font font = new Font("Dialog", Font.PLAIN, 16);
+			axisX.setTickLabelFont(font);
+			axisY.setTickLabelFont(font);
+			
+			OutputStream arquivo = new FileOutputStream(nomeArquivo+".png");
+			ChartUtilities.writeChartAsPNG(arquivo, grafico, 800, 600);
+			this.export(new File(nomeArquivo+"SVG.svg"), grafico, 800, 600); //salva em svg
+			arquivo.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

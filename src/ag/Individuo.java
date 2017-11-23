@@ -79,5 +79,10 @@ public class Individuo implements Comparable<Individuo>{
 		return str;
 		
 	}
+	
+	public double[] ativacaoCamadaInter()
+	{
+		return this.redeNeural.getSaidaEscondida();
+	}
 
 }

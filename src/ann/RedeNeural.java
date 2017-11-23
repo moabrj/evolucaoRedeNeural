@@ -1,5 +1,9 @@
 package ann;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import geral.Config;
 
 public class RedeNeural {
@@ -7,8 +11,13 @@ public class RedeNeural {
 	private Neuronio camadaEntrada[];
 	private Neuronio camadaEscondida[];
 	private Neuronio camadaSaida[];
+	private double saidaEscondida[];
 	
 	public RedeNeural(int n_entradas, int n_neuronios, int n_saidas) {
+		int tipo_funcao_ativacao = 1;
+		if(Config.WTA) {
+			tipo_funcao_ativacao = 2;
+		}
 		//criação da camada de entrada
 		this.camadaEntrada = new Neuronio[n_entradas];
 		for(int i=0; i<n_entradas; i++)
@@ -16,7 +25,8 @@ public class RedeNeural {
 		//criacao da camada intermediaria
 		this.camadaEscondida = new Neuronio[n_neuronios];
 		for(int i=0; i<n_neuronios; i++)
-			this.camadaEscondida[i] = new Neuronio(n_entradas, 1, Config.RECORRENCIA_OUTROS);
+			this.camadaEscondida[i] = new Neuronio(n_entradas, tipo_funcao_ativacao,
+					Config.RECORRENCIA_OUTROS);
 		//criacao da camada intermediaria
 		this.camadaSaida = new Neuronio[n_saidas];
 		for(int i=0; i<n_saidas; i++)
@@ -30,10 +40,29 @@ public class RedeNeural {
 			saidaDaEntrada[i] = camadaEntrada[i].ativado(entradas[i]);
 		}
 		//obtem saidas da camada escondida
-		double saidaEscondida[] = new double[this.camadaEscondida.length];
+		saidaEscondida= new double[this.camadaEscondida.length];
 		for(int i=0; i<camadaEscondida.length; i++) {
 			saidaEscondida[i] = camadaEscondida[i].ativado(saidaDaEntrada);
 		}
+		
+		if(Config.WTA) {
+			double maior = saidaEscondida[0];
+			int index = 0;
+			for(int i=1; i<saidaEscondida.length; i++) {
+				if(saidaEscondida[i] > maior) {
+					maior = saidaEscondida[i];
+					index = i;
+				}
+			}
+			for(int i=0; i<saidaEscondida.length; i++)
+			{
+				if(i!=index)
+					saidaEscondida[i] = 0;
+				else
+					saidaEscondida[i] = 1;
+			}
+		}
+		
 		//obtem saidas da camada de saida
 		double saidaFinal[] = new double[camadaSaida.length];
 		for(int i=0; i<camadaSaida.length; i++) {
@@ -61,6 +90,10 @@ public class RedeNeural {
 			escondidaCopia[i] = camada[i].copia();
 		}
 		return escondidaCopia;
+	}
+	
+	public double[] getSaidaEscondida() {
+		return saidaEscondida;
 	}
 	
 	public void setCamadaSaida(Neuronio[] camadaSaida) {

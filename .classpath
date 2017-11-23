@@ -4,5 +4,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-rasterizer.jar"/>
+	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-slideshow.jar"/>
+	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-squiggle.jar"/>
+	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-svgpp.jar"/>
+	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-ttf2svg.jar"/>
+	<classpathentry kind="lib" path="lib/batik-1.6.1/batik.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

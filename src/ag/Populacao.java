@@ -118,4 +118,20 @@ public class Populacao {
 		return media/this.individuos.size();
 	}
 
+
+	public StringBuilder getAtivacaoMelhor(double[][] ds, int q_linhas) {
+		StringBuilder neuronioAtivo = new StringBuilder();
+		Individuo ind = this.individuos.getFirst();
+		
+		for(int i=0; i<q_linhas; i++) {
+			double[] saida = ind.atualizaRede(ds[i]);
+			double[] saidaEscondida = ind.ativacaoCamadaInter();
+			for(int j=0;j<saidaEscondida.length;j++)
+				neuronioAtivo.append(String.valueOf(saidaEscondida[j])+" ");
+			neuronioAtivo.append("\n");
+		}
+			
+		return neuronioAtivo;
+	}
+
 }
