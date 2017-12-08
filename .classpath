@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="RedeNeural/lib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.19.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-rasterizer.jar"/>
@@ -10,5 +14,43 @@
 	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-svgpp.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.6.1/batik-ttf2svg.jar"/>
 	<classpathentry kind="lib" path="lib/batik-1.6.1/batik.jar"/>
+	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/aida-dev.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/aida-test.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/aida.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/bcel.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/commons-collections.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/cprep.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-aidajni.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-base.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-demo.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphics2d.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphics3d.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-cgm.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-emf.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-gif.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-java.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-pdf.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-ppm.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-ps.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-svg.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio-swf.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-graphicsio.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-hep.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-hep3d.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-heprep.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-j3d.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-jheprep.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-psviewer.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/freehep-tools.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/jas-plotter.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/jel.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/jh.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/jlfgr.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/logkit.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/openide-lookup.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/optimizers.jar"/>
+	<classpathentry kind="lib" path="lib/freehep/velocity.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

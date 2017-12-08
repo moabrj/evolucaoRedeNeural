@@ -17,6 +17,8 @@ public class Individuo implements Comparable<Individuo>{
 	}
 	
 	public double[] atualizaRede(double[] entradas) {
+		if(fitness == 108)
+			fitness = 108;
 		double[] e_copy = entradas;
 		if(entradas.length > 7)
 			e_copy = Arrays.copyOfRange(entradas, 0, 7); //o limiar é exclusivo, logo, os indices são de 0 a 6
@@ -83,6 +85,11 @@ public class Individuo implements Comparable<Individuo>{
 	public double[] ativacaoCamadaInter()
 	{
 		return this.redeNeural.getSaidaEscondida();
+	}
+	
+	public void reiniciaRecorrencia()
+	{
+		this.redeNeural.zerarValoresRecorrencia();
 	}
 
 }

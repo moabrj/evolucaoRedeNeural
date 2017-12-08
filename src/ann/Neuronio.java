@@ -85,7 +85,7 @@ public class Neuronio {
 		return soma;
 	}
 	
-	private int funcaoAtivacao(double entrada) {
+	private double funcaoAtivacao(double entrada) {
 		double resposta;
 		if(funcaoAtivacao == 1) { //tangente hiperbolico
 			resposta = Math.tanh(entrada);
@@ -95,8 +95,15 @@ public class Neuronio {
 				return 0;
 			else
 				return -1;
-		} else
-			return (int) entrada;
+		} else if (funcaoAtivacao == 2) {
+			resposta = 2/ (1 + Math.exp(-entrada));
+			if(resposta >= 0.6)
+				return 1;
+			else
+				return 0;
+		}
+		else //para WTA
+			return entrada;
 	}
 	
 	public double getTau() {
@@ -141,6 +148,11 @@ public class Neuronio {
 		n.setTipo_entrada(tipo_entrada);
 		n.setFuncaoAtivacao(funcaoAtivacao);
 		return n;
+	}
+	
+	public void zeraValorRecorrente()
+	{
+		this.somaAnt = 0;
 	}
 
 }

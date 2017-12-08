@@ -16,7 +16,7 @@ public class RedeNeural {
 	public RedeNeural(int n_entradas, int n_neuronios, int n_saidas) {
 		int tipo_funcao_ativacao = 1;
 		if(Config.WTA) {
-			tipo_funcao_ativacao = 2;
+			tipo_funcao_ativacao = -1;
 		}
 		//criação da camada de entrada
 		this.camadaEntrada = new Neuronio[n_entradas];
@@ -30,7 +30,7 @@ public class RedeNeural {
 		//criacao da camada intermediaria
 		this.camadaSaida = new Neuronio[n_saidas];
 		for(int i=0; i<n_saidas; i++)
-			this.camadaSaida[i] = new Neuronio(n_neuronios, 1, Config.RECORRENCIA_OUTROS);
+			this.camadaSaida[i] = new Neuronio(n_neuronios, Config.FUNCAO_ATIVACAO_SAIDA, Config.RECORRENCIA_OUTROS);
 	}
 	
 	public double[] calculaSaida(double[] entradas) {
@@ -149,5 +149,10 @@ public class RedeNeural {
 				+"\n"+strCamadaSaida+strCamadaSaidaTaus;
 	}
 	
-	
+	public void zerarValoresRecorrencia()
+	{
+		for(int i=0;i<camadaEntrada.length;i++) {
+			camadaEntrada[i].zeraValorRecorrente();
+		}
+	}
 }
