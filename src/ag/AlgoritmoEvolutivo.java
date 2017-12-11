@@ -79,10 +79,8 @@ public class AlgoritmoEvolutivo {
 		while(cont <= Config.N_MAX_GERACOES) {
 			this.gravarArq.println("Geração "+cont+"\n\n");
 			//calcula o fitness de todos os individuos da população
-			if(cont==222)
-				cont=222;
 			if(Config.N_SAIDAS == 3) //para 3 saidas
-				this.populacao.calcularFitness3Saida(leitor.getEntradas(), leitor.q_linhas);
+				this.populacao.calcularFitness3Saida(leitor.getEntradas(), leitor.q_linhas, cont);
 			else
 				this.populacao.calcularFitness1Saida(leitor.getEntradas(), leitor.q_linhas, cont);
 			//salva os dados
@@ -92,17 +90,26 @@ public class AlgoritmoEvolutivo {
 			data.add(cont, this.populacao.getMediaFitnessPop(), "Média");
 			//seleciona os 10 melhores
 			this.populacao.selecionaMelhores();
+			
 			//salva dados de ativacao do melhor individuo
-			StringBuilder str_ativacao = this.populacao.getAtivacaoMelhor(leitor.getEntradas(), leitor.q_linhas, cont);
-			//StringBuilder str_ativacao = this.historico.getListagemAtivacaoNeural();
-			//this.historico.limparHistoricoAtivacaoNeural();
+			StringBuilder str_ativacao = null;
+			if(!Config.ATIVACAO_GERAL)
+				str_ativacao = this.populacao.getAtivacaoMelhor(leitor.getEntradas(), leitor.q_linhas, cont);
+			else {
+				str_ativacao = this.historico.getListagemAtivacaoNeural();
+				this.historico.limparHistoricoAtivacaoNeural();
+			}
+			
 			this.gravarArqAtivacao.println("\n\nGeração "+cont+":");
 			this.gravarArqAtivacao.println(str_ativacao.toString());
 			this.gravarArqAtivacao.flush();
+			
 			//verifica andamento
 			System.out.println("Geração "+cont+". Melhor individuo: "+this.populacao.getIndividuos().getFirst().getFitness());
+			
 			//preenche o restante da população com mutações dos melhores
 			this.mutacao();
+			
 			cont++;
 		}
 		this.arq.close();
