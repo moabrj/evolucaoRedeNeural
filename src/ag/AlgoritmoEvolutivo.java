@@ -16,7 +16,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Random;
@@ -29,9 +33,13 @@ import org.freehep.graphicsio.ps.PSGraphics2D;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItem;
+import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.SeriesRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -264,7 +272,7 @@ public class AlgoritmoEvolutivo {
 		        //p.setProperty(PDFGraphics2D.PAGE_SIZE, "800x600");
 		        //p.setProperty(PDFGraphics2D.PAGE_SIZE, "pdf");
 				g.setProperties(p);
-				g.setFont(font);
+				//g.setFont(new Font("Dialog", Font.PLAIN, 16));
 				g.startExport();
 		        chart.draw( g,new Rectangle(x,y));
 		        g.endExport();
@@ -280,20 +288,48 @@ public class AlgoritmoEvolutivo {
 		//configura cor, largura de linha
 		XYPlot chart = grafico.getXYPlot();
 		chart.setBackgroundPaint(null);
+		
+		Font font = new Font("Dialog", Font.PLAIN, 30);
+		
+		//muda largura das linhas nas series
 		int seriesCount = chart.getSeriesCount();
 		for (int i = 0; i < seriesCount; i++) {
 			chart.getRenderer().setSeriesStroke(i, new BasicStroke(2));
 		}
 		
+		ArrayList<LegendItem> legendItems = new ArrayList<LegendItem>();
+	    Iterator<LegendItem> itr = chart.getLegendItems().iterator();
+	    while (itr.hasNext()) {
+	        legendItems.add(itr.next());
+	    }
+	    /*
+	    //Reverse the order
+	    Collections.sort(legendItems, new Comparator<LegendItem>() {
+	        public int compare(LegendItem lhs, LegendItem rhs) {
+	            return rhs.getSeriesKey().compareTo(lhs.getSeriesKey());
+	        }
+	    });
+	    */
+	    LegendItemCollection newItems = new LegendItemCollection();
+	    for (LegendItem item : legendItems) {
+	    	item.setLabelFont(new Font("Dialog", Font.PLAIN, 16));
+	    	item.setLineStroke(new BasicStroke(2));
+	        newItems.add(item);
+	    }
+	    chart.setFixedLegendItems(newItems);
+		
+		
+		//muda tamanho de numeros do intervalo em x e y
 		ValueAxis axisX = chart.getRangeAxis();
 		ValueAxis axisY = chart.getDomainAxis();
-		Font font = new Font("Dialog", Font.PLAIN, 16);
-		axisX.setTickLabelFont(font);
-		axisY.setTickLabelFont(font);
+		axisX.setTickLabelFont(new Font("Dialog", Font.PLAIN, 16));
+		axisY.setTickLabelFont(new Font("Dialog", Font.PLAIN, 16));
+		axisX.setLabelFont(new Font("Dialog", Font.BOLD, 16));
+		axisY.setLabelFont(new Font("Dialog", Font.BOLD, 16));
 		
 		//OutputStream arquivo = new FileOutputStream(nomeArquivo+str+".png");
 		//ChartUtilities.writeChartAsPNG(arquivo, grafico, 800, 600);
-		//this.export(new File(nomeArquivo+"SVG.svg"), grafico, 800, 600, 1); //salva em svg
+		//this.export(new File(nomeArquivo+"SVG.svg"), grafico, 800, 600, 1, font); //salva em svg
 		//this.export(new File(nomeArquivo+"EPS.eps"), grafico, 800, 600, 2, font); //salva em eps
 		this.export(new File(nomeArquivo+str+"PDF.pdf"), grafico, 800, 600, 3, font); //salva em pdf
 		//arquivo.close();
