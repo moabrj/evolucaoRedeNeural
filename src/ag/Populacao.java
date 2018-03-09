@@ -30,34 +30,6 @@ public class Populacao {
 			individuos.add(new Individuo());
 	}
 	
-	
-	public void calcularFitness(double[][] entradas, int q_linhas) {
-		for(Individuo ind : individuos) {
-			if(ind.getFitness() == -999)
-			{
-				int fitness = 0;
-				for(int i=0; i<q_linhas; i++) {
-					double[] saida = ind.atualizaRede(entradas[i]);
-					
-					//centro
-					if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0 && saida[2] == 0)
-	                    fitness += 1;
-					else if (entradas[i][7] == 0 && saida[0] != 1)
-	                    fitness -= 1;
-					else if (entradas[i][7] == 1 && saida[1] == 1 && saida[0] == 0 && saida[2] == 0)
-	                    fitness += 1;
-					else if (entradas[i][7] == 1 && saida[1] != 1)
-	                    fitness -= 1;
-					else if (entradas[i][7] == -1 && saida[2] == 1 && saida[0] == 0 && saida[1] == 0)
-	                    fitness += 1;
-					else if (entradas[i][7] == -1 && saida[2] != 1)
-	                    fitness -= 1;
-				}
-				ind.setFitness(fitness);
-			}
-		}
-	}
-	
 	public void calcularFitness1Saida(double[][] entradas, int q_linhas, int epoca) throws Exception {
 		double entradaAnt = entradas[0][7];
 		int qntInd = 0;
@@ -83,17 +55,13 @@ public class Populacao {
 				double[] saidaEscondida = ind.ativacaoCamadaInter();
 				
 				//centro
-				if (entradas[i][7] == 0 && saida[0] == 0)
+				if (entradas[i][7] == 2 && saida[0] == 0)
                     fitness += 1;
-				else if (entradas[i][7] == 0 && saida[0] != 0)
+				else if (entradas[i][7] == 2 && saida[0] != 0)
                     fitness -= 1;
-				else if (entradas[i][7] == 1 && saida[0] == 1)
+				else if (entradas[i][7] == 3 && saida[0] == 1)
                     fitness += 1;
-				else if (entradas[i][7] == 1 && saida[0] != 1)
-                    fitness -= 1;
-				else if (entradas[i][7] == -1 && saida[0] == -1)
-                    fitness += 1;
-				else if (entradas[i][7] == -1 && saida[0] != -1)
+				else if (entradas[i][7] == 3 && saida[0] != 1)
                     fitness -= 1;
 				
 				//para registro
@@ -241,7 +209,7 @@ public class Populacao {
 				neuronioAtivo.append("\n");
 				int j = posMaximo(saidaEscondida);
 				//montagem grafico
-				if(i>216) {
+				if(i < 43) {// && i < 129) {
 					if(j == 0)
 						n1++;
 					else if(j==1)
@@ -256,7 +224,7 @@ public class Populacao {
 			}
 			qntInd++;
 		//}
-		double fitnessMax = 78;
+		double fitnessMax = 43;
 		Geracao g = new Geracao();
 		g.addRegistroAtivacao((n1/fitnessMax)*100, (n2/fitnessMax)*100, (n3/fitnessMax)*100, (n4/fitnessMax)*100, (n5/fitnessMax)*100, epoca, this.historico);
 		return neuronioAtivo;
@@ -273,7 +241,7 @@ public class Populacao {
 		neuronioAtivo.append("\n");
 		int j = posMaximo(saidaEscondida);
 		//montagem grafico
-		if(linha<91) {
+		if(linha>91) {
 			if(j == 0)
 				n1++;
 			else if(j==1)
@@ -286,7 +254,7 @@ public class Populacao {
 				n5++;
 		}
 		
-		double fitnessMax = 91*50;
+		double fitnessMax = 43*50;
 		g.addRegistroAtivacaoGrafico(epoca, (n1/fitnessMax)*100, (n2/fitnessMax)*100, (n3/fitnessMax)*100, (n4/fitnessMax)*100, (n5/fitnessMax)*100, this.historico);
 		//this.historico.addGeracao(g);
 	}
@@ -300,6 +268,67 @@ public class Populacao {
 			}
 		}
 		throw new Exception("WTA não funcionou, verifique o método posMaximo em População!!");
+	}
+	
+	/**
+	 * Este método é usado para o cálculo de fitness
+	 * quando usado tamanho e movimento ao mesmo tempo
+	 * @param entradas
+	 * @param q_linhas
+	 * @throws Exception 
+	 */
+	public void calcularFitness4Saida(double[][] entradas, int q_linhas, int epoca) throws Exception {
+		double entradaAnt = entradas[0][7];
+		int qntInd = 0;
+		Geracao g = new Geracao();
+		n1=0;
+		n2=0;
+		n3=0;
+		n4=0;
+		n5=0;
+		for(Individuo ind : individuos) {
+			ind.reiniciaRecorrencia();
+			this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
+			int fitness = 0;
+			double[] saida;
+			for(int i=0; i<q_linhas; i++) {
+				if(entradaAnt != entradas[i][7]) {
+					ind.reiniciaRecorrencia();
+					entradaAnt = entradas[i][7];
+				}
+				
+				saida = ind.atualizaRede(entradas[i]);
+				@SuppressWarnings("unused")
+				double[] saidaEscondida = ind.ativacaoCamadaInter();
+				
+				//direita
+				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0 && saida[2] == 0 && saida[3] == 0)
+                    fitness += 1;
+				else if (entradas[i][7] == 0 && saida[0] != 1 && saida[1] != 0 && saida[2] != 0 && saida[3] != 0)
+                    fitness -= 1;
+				//esquerda
+				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 1 && saida[2] == 0 && saida[3] == 0)
+                    fitness += 1;
+				else if (entradas[i][7] == 1 && saida[0] != 0 && saida[1] != 1 && saida[2] != 0 && saida[3] != 0)
+                    fitness -= 1;
+				//pequeno
+				else if (entradas[i][7] == 2 && saida[0] == 0 && saida[1] == 0 && saida[2] == 1 && saida[3] == 0)
+                    fitness += 1;
+				else if (entradas[i][7] == 2 && saida[0] != 0 && saida[1] != 0 && saida[2] != 1 && saida[3] != 0)
+                    fitness -= 1;
+				//grande
+				else if (entradas[i][7] == 3 && saida[0] == 0 && saida[1] == 0 && saida[2] == 0 && saida[3] == 1)
+                    fitness += 1;
+				else if (entradas[i][7] == 3 && saida[0] != 0 && saida[1] != 0 && saida[2] != 0 && saida[3] != 1)
+                    fitness -= 1;
+				
+				//para registro
+				if(Config.ATIVACAO_GERAL)
+					this.gerarAtivacaoPopulacao(saida, saidaEscondida, i, qntInd, epoca, g);
+			}
+			ind.setFitness(fitness);
+			qntInd++;
+		}
 	}
 
 }

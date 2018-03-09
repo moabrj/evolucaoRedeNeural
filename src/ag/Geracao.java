@@ -17,7 +17,7 @@ public class Geracao {
 		h.inserirDadoGrafico(geracao, (int) n2, "Neurônio 2");
 		h.inserirDadoGrafico(geracao, (int) n3, "Neurônio 3");
 		h.inserirDadoGrafico(geracao, (int) n4, "Neurônio 4");
-		h.inserirDadoGrafico(geracao, (int) n5, "Neurônio 5");
+		//h.inserirDadoGrafico(geracao, (int) n5, "Neurônio 5");
 	}
 	
 	public void addRegistroAtivacaoGrafico(int geracao, double n1, double n2, double n3, double n4, double n5, HistoricoEvolutivo h) {
@@ -25,7 +25,7 @@ public class Geracao {
 		h.inserirDadoGrafico(geracao, (int) n2, "Neurônio 2");
 		h.inserirDadoGrafico(geracao, (int) n3, "Neurônio 3");
 		h.inserirDadoGrafico(geracao, (int) n4, "Neurônio 4");
-		h.inserirDadoGrafico(geracao, (int) n5, "Neurônio 5");
+		//h.inserirDadoGrafico(geracao, (int) n5, "Neurônio 5");
 	}
 	
 	public HashMap<Integer, Integer> resultadosAtivacao(){

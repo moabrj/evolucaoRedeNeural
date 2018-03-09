@@ -87,8 +87,8 @@ public class AlgoritmoEvolutivo {
 		while(cont <= Config.N_MAX_GERACOES) {
 			this.gravarArq.println("Geração "+cont+"\n\n");
 			//calcula o fitness de todos os individuos da população
-			if(Config.N_SAIDAS == 3) //para 3 saidas
-				this.populacao.calcularFitness3Saida(leitor.getEntradas(), leitor.q_linhas, cont);
+			if(Config.N_SAIDAS == 4) //para 4 saidas
+				this.populacao.calcularFitness4Saida(leitor.getEntradas(), leitor.q_linhas, cont);
 			else
 				this.populacao.calcularFitness1Saida(leitor.getEntradas(), leitor.q_linhas, cont);
 			//salva os dados
@@ -124,13 +124,13 @@ public class AlgoritmoEvolutivo {
 		this.gravarArqAtivacao.close();
 		grafico = ChartFactory.createXYLineChart("Evolução", "Geração", 
 			    "Fitness", data, PlotOrientation.VERTICAL, true, false, false);
-		this.salvaGrafico("evolucao");
+		this.salvaGrafico("evolucao", 2);
 		
 		//grafico de ativacao
 		CategoryTableXYDataset dataAtivacao = this.historico.getGraficoDataset();
 		grafico = ChartFactory.createXYLineChart("Ativação Neural", "Geração", 
 			    "Percentual", dataAtivacao, PlotOrientation.VERTICAL, true, false, false);
-		this.salvaGrafico("ativacao");
+		this.salvaGrafico("ativacao", 1);
 		
 	}
 	
@@ -283,13 +283,13 @@ public class AlgoritmoEvolutivo {
 		}
     }
 	 
-	private void salvaGrafico(String str) throws IOException
+	private void salvaGrafico(String str, int tipo_range) throws IOException
 	{
 		//configura cor, largura de linha
 		XYPlot chart = grafico.getXYPlot();
 		chart.setBackgroundPaint(null);
 		
-		Font font = new Font("Dialog", Font.PLAIN, 30);
+		Font font = new Font("Dialog", Font.PLAIN, 38);
 		
 		//muda largura das linhas nas series
 		int seriesCount = chart.getSeriesCount();
@@ -312,7 +312,7 @@ public class AlgoritmoEvolutivo {
 	    */
 	    LegendItemCollection newItems = new LegendItemCollection();
 	    for (LegendItem item : legendItems) {
-	    	item.setLabelFont(new Font("Dialog", Font.PLAIN, 16));
+	    	item.setLabelFont(new Font("Dialog", Font.PLAIN, 18));
 	    	item.setLineStroke(new BasicStroke(2));
 	        newItems.add(item);
 	    }
@@ -322,13 +322,19 @@ public class AlgoritmoEvolutivo {
 		//muda tamanho de numeros do intervalo em x e y
 		ValueAxis axisX = chart.getRangeAxis();
 		ValueAxis axisY = chart.getDomainAxis();
-		axisX.setTickLabelFont(new Font("Dialog", Font.PLAIN, 16));
-		axisY.setTickLabelFont(new Font("Dialog", Font.PLAIN, 16));
-		axisX.setLabelFont(new Font("Dialog", Font.BOLD, 16));
-		axisY.setLabelFont(new Font("Dialog", Font.BOLD, 16));
+		axisX.setTickLabelFont(new Font("Dialog", Font.PLAIN, 18));
+		axisY.setTickLabelFont(new Font("Dialog", Font.PLAIN, 18));
+		axisX.setLabelFont(new Font("Dialog", Font.BOLD, 18));
+		axisY.setLabelFont(new Font("Dialog", Font.BOLD, 18));
+		if(tipo_range == 1) { //percentual
+			axisY.setRange(0, Config.N_MAX_GERACOES);
+			axisX.setRange(0, 100);
+		}
+		else
+			axisX.setRange(-60, Config.MAX_FITNESS);
 		
-		//OutputStream arquivo = new FileOutputStream(nomeArquivo+str+".png");
-		//ChartUtilities.writeChartAsPNG(arquivo, grafico, 800, 600);
+		OutputStream arquivo = new FileOutputStream(nomeArquivo+str+".png");
+		ChartUtilities.writeChartAsPNG(arquivo, grafico, 800, 600);
 		//this.export(new File(nomeArquivo+"SVG.svg"), grafico, 800, 600, 1, font); //salva em svg
 		//this.export(new File(nomeArquivo+"EPS.eps"), grafico, 800, 600, 2, font); //salva em eps
 		this.export(new File(nomeArquivo+str+"PDF.pdf"), grafico, 800, 600, 3, font); //salva em pdf
