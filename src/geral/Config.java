@@ -12,7 +12,7 @@ public class Config {
 	public static int FUNCAO_ATIVACAO_SAIDA = 2; //1-tangente hiperbolico, 2-sigmoide
 	
 	public static int N_IND_POP = 50;
-	public static int N_MAX_GERACOES = 1300;
+	public static int N_MAX_GERACOES = 500;
 	public static double TAXA_MUTACAO = 0.3;
 	public static double LIMITE_MIN = -10;
 	public static double LIMITE_MAX = 10;

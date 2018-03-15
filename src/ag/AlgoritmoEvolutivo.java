@@ -132,6 +132,38 @@ public class AlgoritmoEvolutivo {
 			    "Percentual", dataAtivacao, PlotOrientation.VERTICAL, true, false, false);
 		this.salvaGrafico("ativacao", 1);
 		
+		
+		//registra dados de fitness do processo evolutivo em arquivo
+		FileWriter arqMelhor = new FileWriter(nomeArquivo+"-MELHOR.csv");
+		PrintWriter gravarMelhor = new PrintWriter(arqMelhor);
+		FileWriter arqMedia = new FileWriter(nomeArquivo+"-MEDIA.csv");
+		PrintWriter gravarMedia = new PrintWriter(arqMedia);
+		for(int i=0;i<Config.N_MAX_GERACOES;i++) {
+			//melhor
+			Number x = data.getX(0, i);
+			Number y = data.getY(0, i);
+			//media
+			Number x1 = data.getX(1, i);
+			Number y1 = data.getY(1, i);
+			gravarMelhor.println(x+", "+y);
+			gravarMedia.println(x1+", "+y1);
+		}
+		gravarMelhor.close();
+		gravarMedia.close();
+		
+		for(int t=0;t<dataAtivacao.getSeriesCount();t++) {
+			FileWriter arqNeuronio = new FileWriter(nomeArquivo+"-NEURONIO_"+(t+1)+".csv");
+			PrintWriter gravarNeuronio = new PrintWriter(arqNeuronio);
+			
+			//registra dados da evolução da ativação neural em arquivo 
+			for(int i=0;i<Config.N_MAX_GERACOES;i++) {
+				Number x = dataAtivacao.getX(t, i);
+				Number y = dataAtivacao.getY(t, i);
+				gravarNeuronio.println(x+", "+y);
+			}
+			gravarNeuronio.close();
+		}
+		
 	}
 	
 	private void mutacao() throws Exception {
@@ -335,10 +367,13 @@ public class AlgoritmoEvolutivo {
 		
 		OutputStream arquivo = new FileOutputStream(nomeArquivo+str+".png");
 		ChartUtilities.writeChartAsPNG(arquivo, grafico, 800, 600);
+		
 		//this.export(new File(nomeArquivo+"SVG.svg"), grafico, 800, 600, 1, font); //salva em svg
 		//this.export(new File(nomeArquivo+"EPS.eps"), grafico, 800, 600, 2, font); //salva em eps
-		this.export(new File(nomeArquivo+str+"PDF.pdf"), grafico, 800, 600, 3, font); //salva em pdf
-		//arquivo.close();
+		
+		//this.export(new File(nomeArquivo+str+"PDF.pdf"), grafico, 800, 600, 3, font); //salva em pdf
+		
+		arquivo.close();
 		
 	}
 
