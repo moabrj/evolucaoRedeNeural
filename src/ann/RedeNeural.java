@@ -10,10 +10,18 @@ public class RedeNeural {
 
 	private Neuronio camadaEntrada[];
 	private Neuronio camadaEscondida[];
+	private Neuronio camadaAssociativa[];
 	private Neuronio camadaSaida[];
 	private double saidaEscondida[];
 	
-	public RedeNeural(int n_entradas, int n_neuronios, int n_saidas) {
+	/**
+	 * 
+	 * @param n_entradas (Numero de entrada)
+	 * @param n_neuronios (Numero de neuronios da camada escondida)
+	 * @param n_n_associativa (Numero de neuronios da camada associativa)
+	 * @param n_saidas (Numero de neuronios de saida)
+	 */
+	public RedeNeural(int n_entradas, int n_neuronios, int n_n_associativa, int n_saidas) {
 		int tipo_funcao_ativacao = 1;
 		if(Config.WTA) {
 			tipo_funcao_ativacao = -1;
@@ -27,7 +35,12 @@ public class RedeNeural {
 		for(int i=0; i<n_neuronios; i++)
 			this.camadaEscondida[i] = new Neuronio(n_entradas, tipo_funcao_ativacao,
 					Config.RECORRENCIA_OUTROS);
-		//criacao da camada intermediaria
+		//criacao da camada intermediaria ASSOCIATIVA
+		this.camadaAssociativa = new Neuronio[n_n_associativa];
+		for(int i=0; i<n_n_associativa; i++)
+			this.camadaAssociativa[i] = new Neuronio(n_entradas, tipo_funcao_ativacao,
+					Config.RECORRENCIA_OUTROS);
+		//criacao da camada de saida
 		this.camadaSaida = new Neuronio[n_saidas];
 		for(int i=0; i<n_saidas; i++)
 			this.camadaSaida[i] = new Neuronio(n_neuronios, Config.FUNCAO_ATIVACAO_SAIDA, Config.RECORRENCIA_OUTROS);

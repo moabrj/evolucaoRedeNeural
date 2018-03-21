@@ -28,8 +28,8 @@ public class HistoricoEvolutivo {
 			HashMap<Integer, Integer> map = g.resultadosAtivacao();
 			data.add(cont, map.get(1), "Neurônio 1");
 			data.add(cont, map.get(2), "Neurônio 2");
-			data.add(cont, map.get(3), "Neurônio 3");
-			data.add(cont, map.get(4), "Neurônio 4");
+			//data.add(cont, map.get(3), "Neurônio 3");
+			//data.add(cont, map.get(4), "Neurônio 4");
 			//data.add(cont, map.get(5), "Neurônio 5");
 			cont++;
 		}

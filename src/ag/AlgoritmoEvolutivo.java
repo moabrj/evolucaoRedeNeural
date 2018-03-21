@@ -90,7 +90,7 @@ public class AlgoritmoEvolutivo {
 			if(Config.N_SAIDAS == 4) //para 4 saidas
 				this.populacao.calcularFitness4Saida(leitor.getEntradas(), leitor.q_linhas, cont);
 			else
-				this.populacao.calcularFitness1Saida(leitor.getEntradas(), leitor.q_linhas, cont);
+				this.populacao.calcularFitness2Saida(leitor.getEntradas(), leitor.q_linhas, cont);
 			//salva os dados
 			this.populacao.registrarLogs(gravarArq);
 			//adiciona o melhor na lista de melhores da geração

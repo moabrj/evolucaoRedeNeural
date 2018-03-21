@@ -13,7 +13,8 @@ public class Individuo implements Comparable<Individuo>{
 	
 	public Individuo() {
 		this.redeNeural = new RedeNeural(Config.N_ENTRADAS, 
-				Config.N_NEURONIOS_ESCONDIDOS, Config.N_SAIDAS);
+				Config.N_NEURONIOS_ESCONDIDOS, Config.N_NEURONIOS_ASSOCIATIVA,
+				Config.N_SAIDAS);
 	}
 	
 	public double[] atualizaRede(double[] entradas) {

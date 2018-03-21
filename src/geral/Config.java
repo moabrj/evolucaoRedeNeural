@@ -5,7 +5,8 @@ import java.util.Random;
 public class Config {
 	
 	public static int N_ENTRADAS = 7;
-	public static int N_NEURONIOS_ESCONDIDOS = 4;
+	public static int N_NEURONIOS_ASSOCIATIVA = 2;
+	public static int N_NEURONIOS_ESCONDIDOS = 2;
 	public static int N_SAIDAS = 4;
 	//public static int N_SAIDAS = 3;
 	public static int SEMENTE = 10;
@@ -18,7 +19,8 @@ public class Config {
 	public static double LIMITE_MAX = 10;
 	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\movimento.csv";
 	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\tamanho.csv";
-	public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\movimento_tamanho.csv";
+	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\movimento_tamanho.csv";
+	public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\aproximar_afastar.csv";
 	public static final Random random = new Random(SEMENTE);
 	public static final boolean WTA = true;
 	public static final double MAX_FITNESS = 172;

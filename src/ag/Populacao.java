@@ -209,7 +209,8 @@ public class Populacao {
 				neuronioAtivo.append("\n");
 				int j = posMaximo(saidaEscondida);
 				//montagem grafico
-				if(i < 43) {// && i < 129) {
+				if(i < 86) { 
+				//if(i > 85 && i < 129) {
 					if(j == 0)
 						n1++;
 					else if(j==1)
@@ -224,7 +225,7 @@ public class Populacao {
 			}
 			qntInd++;
 		//}
-		double fitnessMax = 43;
+		double fitnessMax = 86;
 		Geracao g = new Geracao();
 		g.addRegistroAtivacao((n1/fitnessMax)*100, (n2/fitnessMax)*100, (n3/fitnessMax)*100, (n4/fitnessMax)*100, (n5/fitnessMax)*100, epoca, this.historico);
 		return neuronioAtivo;
@@ -259,7 +260,12 @@ public class Populacao {
 		//this.historico.addGeracao(g);
 	}
 
-	
+	/**
+	 * Retorna qual neurônio foi ativado para uma dada entrada
+	 * @param v
+	 * @return
+	 * @throws Exception
+	 */
 	private int posMaximo(double[] v) throws Exception {
 		for(int i=0;i<v.length;i++)
 		{
@@ -320,6 +326,59 @@ public class Populacao {
 				else if (entradas[i][7] == 3 && saida[0] == 0 && saida[1] == 0 && saida[2] == 0 && saida[3] == 1)
                     fitness += 1;
 				else if (entradas[i][7] == 3 && saida[0] != 0 && saida[1] != 0 && saida[2] != 0 && saida[3] != 1)
+                    fitness -= 1;
+				
+				//para registro
+				if(Config.ATIVACAO_GERAL)
+					this.gerarAtivacaoPopulacao(saida, saidaEscondida, i, qntInd, epoca, g);
+			}
+			ind.setFitness(fitness);
+			qntInd++;
+		}
+	}
+	
+	/**
+	 * O individuo é classificado(fitness) de acordo com a resposta.
+	 * Movimento para direita e objeto grande deve ser classificado como afastar
+	 * Movimento para esquerda e objeto pequeno deve ser classificado como aproximar
+	 * @param entradas
+	 * @param q_linhas
+	 * @param epoca
+	 * @throws Exception
+	 */
+	public void calcularFitness2Saida(double[][] entradas, int q_linhas, int epoca) throws Exception {
+		double entradaAnt = entradas[0][7];
+		int qntInd = 0;
+		Geracao g = new Geracao();
+		n1=0;
+		n2=0;
+		n3=0;
+		n4=0;
+		n5=0;
+		for(Individuo ind : individuos) {
+			ind.reiniciaRecorrencia();
+			this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
+			int fitness = 0;
+			double[] saida;
+			for(int i=0; i<q_linhas; i++) {
+				if(entradaAnt != entradas[i][7]) {
+					ind.reiniciaRecorrencia();
+					entradaAnt = entradas[i][7];
+				}
+				
+				saida = ind.atualizaRede(entradas[i]);
+				@SuppressWarnings("unused")
+				double[] saidaEscondida = ind.ativacaoCamadaInter();
+				
+				//aproximar
+				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0 && saida[2] == 0 && saida[3] == 0)
+                    fitness += 1;
+				else if (entradas[i][7] == 0 && saida[0] != 1 && saida[1] != 0 && saida[2] != 0 && saida[3] != 0)
+                    fitness -= 1;
+				//afastar
+				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 1 && saida[2] == 0 && saida[3] == 0)
+                    fitness += 1;
+				else if (entradas[i][7] == 1 && saida[0] != 0 && saida[1] != 1 && saida[2] != 0 && saida[3] != 0)
                     fitness -= 1;
 				
 				//para registro
