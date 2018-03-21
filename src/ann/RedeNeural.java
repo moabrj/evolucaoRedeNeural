@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import geral.Auxiliar;
 import geral.Config;
 
 public class RedeNeural {
@@ -13,6 +14,7 @@ public class RedeNeural {
 	private Neuronio camadaAssociativa[];
 	private Neuronio camadaSaida[];
 	private double saidaEscondida[];
+	private double saidaAssociativa[];
 	
 	/**
 	 * 
@@ -33,7 +35,7 @@ public class RedeNeural {
 		//criacao da camada intermediaria
 		this.camadaEscondida = new Neuronio[n_neuronios];
 		for(int i=0; i<n_neuronios; i++)
-			this.camadaEscondida[i] = new Neuronio(n_entradas, tipo_funcao_ativacao,
+			this.camadaEscondida[i] = new Neuronio(n_entradas+n_n_associativa, tipo_funcao_ativacao,
 					Config.RECORRENCIA_OUTROS);
 		//criacao da camada intermediaria ASSOCIATIVA
 		this.camadaAssociativa = new Neuronio[n_n_associativa];
@@ -52,10 +54,59 @@ public class RedeNeural {
 		for(int i=0; i<camadaEntrada.length; i++) {
 			saidaDaEntrada[i] = camadaEntrada[i].ativado(entradas[i]);
 		}
+		
+		//obtem saidas da camada associativa
+		saidaAssociativa = new double[camadaAssociativa.length];
+		for(int i=0; i<camadaAssociativa.length; i++) {
+			saidaAssociativa[i] = camadaAssociativa[i].ativado(saidaDaEntrada);
+		}
+		
+		//calcula o WTA
+		if(Config.WTA) {
+			double maior = saidaAssociativa[0];
+			int index = 0;
+			for(int i=1; i<saidaAssociativa.length; i++) {
+				if(saidaAssociativa[i] > maior) {
+					maior = saidaAssociativa[i];
+					index = i;
+				}
+			}
+			for(int i=0; i<saidaAssociativa.length; i++)
+			{
+				if(i!=index)
+					saidaAssociativa[i] = 0;
+				else
+					saidaAssociativa[i] = 1;
+			}
+		}
+		
+		
 		//obtem saidas da camada escondida
+		/*
+		 * A entrada da camada escondida é composta pelas entradas da camada de entrada
+		 * e entradas da camada associativa. A camada escondida so leva em conta os resultados
+		 * da camada associativa se Auxiliar.USAR_CAMADA_ASSOCIATIVA estiver ativo (true).
+		 */
+		double aux[] = null;
+		if(Auxiliar.USAR_CAMADA_ASSOCIATIVA == false) {
+			aux = new double[camadaAssociativa.length];
+			for(int i=0; i<camadaAssociativa.length; i++)
+				aux[i] = 0;
+		}
 		saidaEscondida= new double[this.camadaEscondida.length];
 		for(int i=0; i<camadaEscondida.length; i++) {
-			saidaEscondida[i] = camadaEscondida[i].ativado(saidaDaEntrada);
+			if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) {
+				double[] entradaCamadaEscondida = new double[saidaDaEntrada.length + saidaAssociativa.length];
+		        System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+		        System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
+				saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
+			}
+			else {
+				double[] entradaCamadaEscondida = new double[saidaDaEntrada.length + aux.length];
+		        System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+		        System.arraycopy(aux, 0, entradaCamadaEscondida, saidaDaEntrada.length, aux.length);
+				saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com zeros
+			}
 		}
 		
 		if(Config.WTA) {

@@ -101,6 +101,16 @@ public class Neuronio {
 				return 1;
 			else
 				return 0;
+		} else if ( funcaoAtivacao == 3 ) {
+			if(entrada > 10)
+				entrada = 10;
+			else if (entrada < -10)
+				entrada = -10;
+			resposta = (entrada + 10)/20;
+			if(resposta >= 0.5)
+				return 1;
+			else
+				return 0;
 		}
 		else //para WTA
 			return entrada;

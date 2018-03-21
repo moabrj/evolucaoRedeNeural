@@ -22,10 +22,11 @@ public class Config {
 	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\movimento_tamanho.csv";
 	public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\aproximar_afastar.csv";
 	public static final Random random = new Random(SEMENTE);
-	public static final boolean WTA = true;
 	public static final double MAX_FITNESS = 172;
 	
 	public static boolean RECORRENCIA_ENTRADA = true;
 	public static boolean RECORRENCIA_OUTROS = false;
+	public static boolean ATIVA_BIAS = true;
+	public static final boolean WTA = true;
 	public static boolean ATIVACAO_GERAL = false;
 }
