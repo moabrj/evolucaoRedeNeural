@@ -10,10 +10,10 @@ public class LeitorCSV {
 	private double[][] entradas = null;
 	private ArrayList<Vetor> dados;
 	public int q_linhas = 0;
+	private String csvFile = Config.NOME_ARQUIVO;
 	
 	public void obterArquivo() {
 		dados = new ArrayList<>();
-		String csvFile = Config.NOME_ARQUIVO;
         String line = "";
         String cvsSplitBy = ",";
 
@@ -70,6 +70,14 @@ public class LeitorCSV {
 		{
 			return this.dados;
 		}
+	}
+	
+	/**
+	 * O nome deve ser dado com o caminho absoluto.
+	 * @param nome
+	 */
+	public void setArquivo(String nome) {
+		this.csvFile = nome;
 	}
 
 }

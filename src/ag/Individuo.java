@@ -38,12 +38,20 @@ public class Individuo implements Comparable<Individuo>{
 		return this.redeNeural.getNeuroniosEntrada();
 	}
 	
+	public Neuronio[] getCamadaAssociativa() throws Exception {
+		return this.redeNeural.getNeuroniosAssociativa();
+	}
+	
 	public void setCamadaSaida(Neuronio[] camadaSaida) {
 		this.redeNeural.setCamadaSaida(camadaSaida);
 	}
 	
 	public void setCamadaEscondida(Neuronio[] camadaEscondida) {
 		this.redeNeural.setCamadaEscondida(camadaEscondida);
+	}
+	
+	public void setCamadaAssociativa(Neuronio[] camadaAssociativa) {
+		this.redeNeural.setCamadaAssociativa(camadaAssociativa);
 	}
 	
 	public void setCamadaEntrada(Neuronio[] camadaEntrada) {
@@ -72,10 +80,11 @@ public class Individuo implements Comparable<Individuo>{
 		ind.setCamadaEntrada(this.getCamadaEntrada());
 		ind.setCamadaEscondida(this.getCamadaEscondida());
 		ind.setCamadaSaida(this.getCamadaSaida());
+		ind.setCamadaAssociativa(this.getCamadaAssociativa());
 		//ind.setFitness(this.getFitness());
 		return ind;
 	}
-	
+
 	public String toString()
 	{
 		String str = "Fitness "+this.fitness+redeNeural.toString();
@@ -86,6 +95,11 @@ public class Individuo implements Comparable<Individuo>{
 	public double[] ativacaoCamadaInter()
 	{
 		return this.redeNeural.getSaidaEscondida();
+	}
+	
+	public double[] ativacaoCamadaAssociativa()
+	{
+		return this.redeNeural.getSaidaCamadaAssociativa();
 	}
 	
 	public void reiniciaRecorrencia()

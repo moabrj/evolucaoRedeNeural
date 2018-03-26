@@ -181,6 +181,7 @@ public class RedeNeural {
 		for(Neuronio n : this.camadaEntrada) {
 			strCamadaEntrada+=" "+n.getTau();
 		}
+		
 		String strCamadaEscondida = "Camada Escondida [peso]: \n";
 		String strCamadaEscondidaTaus = "Camada Escondida [TAUs]: ";
 		for(Neuronio n : this.camadaEscondida) {
@@ -197,6 +198,24 @@ public class RedeNeural {
 			strCamadaEscondida+="\n";
 			strCamadaEscondidaTaus+=" ["+n.getTau()+"]";
 		}
+		
+		String strCamadaAssociativa = "Camada Associativa [pesos]: \n";
+		String strCamadaAssociativaTaus = "Camada Associativa [TAUs]: ";
+		for(Neuronio n : this.camadaAssociativa) {
+			double[] pesos = null;
+			try {
+				pesos = n.getPesos();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			for(int i =0; i<n.getNumeroPesos(); i++) {
+				strCamadaAssociativa+=" ["+pesos[i]+"]";
+			}
+			strCamadaAssociativa+="\n";
+			strCamadaAssociativaTaus+=" ["+n.getTau()+"]";
+		}
+		
 		String strCamadaSaida = "Camada Saida [peso]: \n";
 		String strCamadaSaidaTaus = "Camada Saida [TAUs]: ";
 		for(Neuronio n : this.camadaSaida) {
@@ -214,6 +233,7 @@ public class RedeNeural {
 			strCamadaSaidaTaus+=" ["+n.getTau()+"]";
 		}
 		return "\n"+strCamadaEntrada+"\n"+strCamadaEscondida+strCamadaEscondidaTaus
+				+"\n"+strCamadaAssociativa+strCamadaAssociativaTaus
 				+"\n"+strCamadaSaida+strCamadaSaidaTaus;
 	}
 	

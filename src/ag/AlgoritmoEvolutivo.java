@@ -46,6 +46,7 @@ import org.w3c.dom.Document;
 import org.freehep.graphicsio.PageConstants;
 
 import ann.Neuronio;
+import geral.Auxiliar;
 import geral.Config;
 import geral.LeitorCSV;
 
@@ -64,7 +65,6 @@ public class AlgoritmoEvolutivo {
 	public AlgoritmoEvolutivo() throws IOException {
 		this.historico = new HistoricoEvolutivo();
 		this.leitor = new LeitorCSV();
-		this.leitor.obterArquivo();
 		//this.leitor.getEntradas();
 		this.populacao = new Populacao(this.historico);
 		Date dataHoraAtual = new Date();
@@ -84,8 +84,27 @@ public class AlgoritmoEvolutivo {
 	public void evoluir() throws Exception {
 		int cont = 1;
 		CategoryTableXYDataset data = new CategoryTableXYDataset();
+		
+		//Configura o primeiro ciclo de treinamento
+		if(Auxiliar.TREINO_COM_CICLOS)
+		{
+			this.leitor.setArquivo(Config.TREINO_CICLO_1);
+			Auxiliar.USAR_CAMADA_ASSOCIATIVA = false;
+		}
+		this.leitor.obterArquivo();
+		
 		while(cont <= Config.N_MAX_GERACOES) {
 			this.gravarArq.println("Geração "+cont+"\n\n");
+			
+			if(Auxiliar.TREINO_COM_CICLOS)
+			{
+				if(cont == 50) { //treinar ciclo 1
+					this.leitor.setArquivo(Config.TREINO_CICLO_2);
+					Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
+					this.leitor.obterArquivo(); //realizar leitura do arquivo .csv
+				} 
+			}
+			
 			//calcula o fitness de todos os individuos da população
 			if(Config.N_SAIDAS == 4) //para 4 saidas
 				this.populacao.calcularFitness4Saida(leitor.getEntradas(), leitor.q_linhas, cont);
@@ -108,7 +127,7 @@ public class AlgoritmoEvolutivo {
 				this.historico.limparHistoricoAtivacaoNeural();
 			}
 			
-			this.gravarArqAtivacao.println("\n\nGeração "+cont+":");
+			//this.gravarArqAtivacao.println("\n\nGeração "+cont+":");
 			this.gravarArqAtivacao.println(str_ativacao.toString());
 			this.gravarArqAtivacao.flush();
 			
@@ -122,16 +141,6 @@ public class AlgoritmoEvolutivo {
 		}
 		this.arq.close();
 		this.gravarArqAtivacao.close();
-		grafico = ChartFactory.createXYLineChart("Evolução", "Geração", 
-			    "Fitness", data, PlotOrientation.VERTICAL, true, false, false);
-		this.salvaGrafico("evolucao", 2);
-		
-		//grafico de ativacao
-		CategoryTableXYDataset dataAtivacao = this.historico.getGraficoDataset();
-		grafico = ChartFactory.createXYLineChart("Ativação Neural", "Geração", 
-			    "Percentual", dataAtivacao, PlotOrientation.VERTICAL, true, false, false);
-		this.salvaGrafico("ativacao", 1);
-		
 		
 		//registra dados de fitness do processo evolutivo em arquivo
 		FileWriter arqMelhor = new FileWriter(nomeArquivo+"-MELHOR.csv");
@@ -151,6 +160,7 @@ public class AlgoritmoEvolutivo {
 		gravarMelhor.close();
 		gravarMedia.close();
 		
+		/*
 		for(int t=0;t<dataAtivacao.getSeriesCount();t++) {
 			FileWriter arqNeuronio = new FileWriter(nomeArquivo+"-NEURONIO_"+(t+1)+".csv");
 			PrintWriter gravarNeuronio = new PrintWriter(arqNeuronio);
@@ -163,7 +173,20 @@ public class AlgoritmoEvolutivo {
 			}
 			gravarNeuronio.close();
 		}
+		*/
 		
+		//salva gráfico de processo evolutivo
+		grafico = ChartFactory.createXYLineChart("Evolução", "Geração", 
+			    "Fitness", data, PlotOrientation.VERTICAL, true, false, false);
+		this.salvaGrafico("evolucao", 2);
+		
+		//salva grafico de ativacao neural
+		/*
+		CategoryTableXYDataset dataAtivacao = this.historico.getGraficoDataset();
+		grafico = ChartFactory.createXYLineChart("Ativação Neural", "Geração", 
+			    "Percentual", dataAtivacao, PlotOrientation.VERTICAL, true, false, false);
+		this.salvaGrafico("ativacao", 1);
+		*/
 	}
 	
 	private void mutacao() throws Exception {
@@ -174,13 +197,6 @@ public class AlgoritmoEvolutivo {
 	
 		while(q_ind < Config.N_IND_POP) {
 			Individuo ind = copia_pop.get(rand.nextInt(10)).copia();
-			//if(n < 0.2) { //20% de chance para o primeiro individuo
-			//	ind = copia_pop.getFirst().copia();
-			//} else if (n >= 0.2 && n < 0.7) { //50% de chance para individuos da 1º a 4º posicao
-			//	ind = copia_pop.get(r.nextInt(5)+1).copia(); //de 1 a 4
-			//} else { //30% para o restante
-			//	ind = copia_pop.get(r.nextInt(5)+5).copia(); //de 5 a 9
-			//}
 			
 			//nesta parte são alterados todos os pesos se o neurônio for selecionado
 			//também é escolhida uma camada a ser alterada
@@ -191,8 +207,9 @@ public class AlgoritmoEvolutivo {
 					neuronio.setTau(x);
 				}
 			}
-			
 			ind.setCamadaEntrada(neuronios);
+			
+			//realiza mutação nos pesos dos neurônios da camada escondida
 			neuronios = ind.getCamadaEscondida();
 			for(Neuronio neuronio : neuronios) {
 				//altera pesos/bias do neuronio
@@ -212,6 +229,27 @@ public class AlgoritmoEvolutivo {
 			}
 			ind.setCamadaEscondida(neuronios);
 			
+			//realiza mutação nos pesos dos neurônios da camada associativa
+			neuronios = ind.getCamadaAssociativa();
+			for(Neuronio neuronio : neuronios) {
+				//altera pesos/bias do neuronio
+				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
+					double[] pesos = new double[neuronio.getNumeroPesos()];
+					for(int i=0; i<neuronio.getNumeroPesos(); i++) {
+						pesos[i] = Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+					}
+					neuronio.setPesos(pesos);
+					
+					//o tau pode ser mutado ou não
+					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
+						double x = rand.nextDouble();
+						neuronio.setTau(x);
+					}
+				}
+			}
+			ind.setCamadaAssociativa(neuronios);
+			
+			//realiza mutação nos pesos dos neurônios de saída
 			neuronios = ind.getCamadaSaida();
 			for(Neuronio neuronio : neuronios) {
 				//altera pesos/bias do neuronio
@@ -219,18 +257,8 @@ public class AlgoritmoEvolutivo {
 					double[] pesos = new double[neuronio.getNumeroPesos()];
 					for(int i=0; i<neuronio.getNumeroPesos(); i++) {
 						pesos[i] = Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
-						/*
-						double adicao = -10 + (rand.nextDouble() * (-20)); //aleatorio entre -2 e 2
-						if((pesos[i]+adicao)<Config.LIMITE_MAX && (pesos[i]+adicao)>Config.LIMITE_MIN)
-							pesos[i]+=adicao;
-						else if((pesos[i]+adicao)>Config.LIMITE_MAX)
-							pesos[i] = Config.LIMITE_MAX;
-						else
-							pesos[i] = Config.LIMITE_MIN;
-						*/
 					}
 					neuronio.setPesos(pesos);
-					
 					//o tau pode ser mutado ou não
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 						double x = rand.nextDouble();

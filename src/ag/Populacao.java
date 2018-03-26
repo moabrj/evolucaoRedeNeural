@@ -73,52 +73,50 @@ public class Populacao {
 
 
 	public StringBuilder getAtivacaoMelhor(double[][] ds, int q_linhas, int epoca) throws Exception {
-		StringBuilder neuronioAtivo = new StringBuilder();
+		StringBuilder ativacaoNeural_str = new StringBuilder();
 		Individuo ind = this.individuos.getFirst();
-		int qntInd = 0;
-		double n1 = 0;
-		double n2 = 0;
-		double n3 = 0;
-		double n4 = 0;
-		double n5 = 0;
-		//for(Individuo ind : individuos) {
-			ind.reiniciaRecorrencia();
-			neuronioAtivo.append("\nIndividuo "+qntInd+"\n");
-			double entradaAnt = ds[0][7];
-			for(int i=0; i<q_linhas; i++) {
-				if(entradaAnt != ds[i][7]) {
-					ind.reiniciaRecorrencia();
-					entradaAnt = ds[i][7];
-				}
-				double[] saida = ind.atualizaRede(ds[i]);
-				double[] saidaEscondida = ind.ativacaoCamadaInter();
-				for(int j=0;j<saidaEscondida.length;j++)
-					neuronioAtivo.append(String.valueOf(saidaEscondida[j])+" ");
-				for(int j=0;j<saida.length;j++)
-					neuronioAtivo.append(String.valueOf(saida[j])+" ");
-				neuronioAtivo.append("\n");
-				int j = posMaximo(saidaEscondida);
-				//montagem grafico
-				if(i < 86) { 
-				//if(i > 85 && i < 129) {
-					if(j == 0)
-						n1++;
-					else if(j==1)
-						n2++;
-					else if(j==2)
-						n3++;
-					else if(j==3)
-						n4++;
-					else if(j==4)
-						n5++;
-				}
+		
+		ind.reiniciaRecorrencia();
+		//ativacaoNeural_str.append("\nMelhor Individuo:\n");
+		double entradaAnt = ds[0][7];
+		for(int i=0; i<q_linhas; i++) {
+			if(entradaAnt != ds[i][7]) {
+				ind.reiniciaRecorrencia();
+				entradaAnt = ds[i][7];
 			}
-			qntInd++;
-		//}
-		double fitnessMax = 86;
-		Geracao g = new Geracao();
-		g.addRegistroAtivacao((n1/fitnessMax)*100, (n2/fitnessMax)*100, (n3/fitnessMax)*100, (n4/fitnessMax)*100, (n5/fitnessMax)*100, epoca, this.historico);
-		return neuronioAtivo;
+			double[] saida = ind.atualizaRede(ds[i]);
+			double[] saidaEscondida = ind.ativacaoCamadaInter();
+			double[] saidaAssociativa = ind.ativacaoCamadaAssociativa();
+			for(int j=0;j<saidaEscondida.length;j++)
+				ativacaoNeural_str.append(String.valueOf(saidaEscondida[j])+",");
+			for(int j=0;j<saidaAssociativa.length;j++)
+				ativacaoNeural_str.append(String.valueOf(saidaAssociativa[j])+",");
+			for(int j=0;j<saida.length;j++)
+				ativacaoNeural_str.append(String.valueOf(saida[j])+",");
+			ativacaoNeural_str.append("\n");
+			/*
+			int j = posMaximo(saidaEscondida);
+			//montagem grafico
+			if(i < 86) { 
+			//if(i > 85 && i < 129) {
+				if(j == 0)
+					n1++;
+				else if(j==1)
+					n2++;
+				else if(j==2)
+					n3++;
+				else if(j==3)
+					n4++;
+				else if(j==4)
+					n5++;
+			}
+			*/
+		}
+		
+		//double fitnessMax = 86;
+		//Geracao g = new Geracao();
+		//g.addRegistroAtivacao((n1/fitnessMax)*100, (n2/fitnessMax)*100, (n3/fitnessMax)*100, (n4/fitnessMax)*100, (n5/fitnessMax)*100, epoca, this.historico);
+		return ativacaoNeural_str;
 	}
 
 	public void gerarAtivacaoPopulacao(double[] saidaFinal, double[] saidaEscondida, int linha, int qntInd, int epoca, Geracao g) throws Exception {
