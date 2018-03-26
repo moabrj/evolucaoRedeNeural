@@ -7,7 +7,7 @@ public class Config {
 	public static int N_ENTRADAS = 7;
 	public static int N_NEURONIOS_ASSOCIATIVA = 2;
 	public static int N_NEURONIOS_ESCONDIDOS = 2;
-	public static int N_SAIDAS = 4;
+	public static int N_SAIDAS = 2;
 	//public static int N_SAIDAS = 3;
 	public static int SEMENTE = 10;
 	public static int FUNCAO_ATIVACAO_SAIDA = 2; //1-tangente hiperbolico, 2-sigmoide

@@ -2,6 +2,8 @@ package ag;
 
 import java.util.HashMap;
 
+import geral.Config;
+
 public class Geracao {
 	
 	private HashMap<Integer,Integer> registroAtivacaoNeuronios;
@@ -13,19 +15,17 @@ public class Geracao {
 	}
 	
 	public void addRegistroAtivacao(double n1, double n2, double n3, double n4, double n5, int geracao, HistoricoEvolutivo h) {
-		h.inserirDadoGrafico(geracao, (int) n1, "Neurônio 1");
-		h.inserirDadoGrafico(geracao, (int) n2, "Neurônio 2");
-		h.inserirDadoGrafico(geracao, (int) n3, "Neurônio 3");
-		h.inserirDadoGrafico(geracao, (int) n4, "Neurônio 4");
-		//h.inserirDadoGrafico(geracao, (int) n5, "Neurônio 5");
+		double[] n = {n1, n2, n3, n4, n5};
+		for(int i = 1; i <= Config.N_NEURONIOS_ESCONDIDOS; i++) {
+			h.inserirDadoGrafico(geracao, (int) n[i-1], "Neurônio "+i);
+		}
 	}
 	
 	public void addRegistroAtivacaoGrafico(int geracao, double n1, double n2, double n3, double n4, double n5, HistoricoEvolutivo h) {
-		h.inserirDadoGrafico(geracao, (int) n1, "Neurônio 1");
-		h.inserirDadoGrafico(geracao, (int) n2, "Neurônio 2");
-		h.inserirDadoGrafico(geracao, (int) n3, "Neurônio 3");
-		h.inserirDadoGrafico(geracao, (int) n4, "Neurônio 4");
-		//h.inserirDadoGrafico(geracao, (int) n5, "Neurônio 5");
+		double[] n = {n1, n2, n3, n4, n5};
+		for(int i = 1; i <= Config.N_NEURONIOS_ESCONDIDOS; i++) {
+			h.inserirDadoGrafico(geracao, (int) n[i-1], "Neurônio "+i);
+		}
 	}
 	
 	public HashMap<Integer, Integer> resultadosAtivacao(){

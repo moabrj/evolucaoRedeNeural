@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import org.jfree.data.xy.CategoryTableXYDataset;
 
+import geral.Config;
+
 public class HistoricoEvolutivo {
 	
 	private ArrayList<Geracao> geracoes;
@@ -26,11 +28,16 @@ public class HistoricoEvolutivo {
 		int cont = 0;
 		for(Geracao g : geracoes) {
 			HashMap<Integer, Integer> map = g.resultadosAtivacao();
-			data.add(cont, map.get(1), "Neurônio 1");
-			data.add(cont, map.get(2), "Neurônio 2");
-			//data.add(cont, map.get(3), "Neurônio 3");
-			//data.add(cont, map.get(4), "Neurônio 4");
-			//data.add(cont, map.get(5), "Neurônio 5");
+			if(Config.N_NEURONIOS_ESCONDIDOS <= 1)
+				data.add(cont, map.get(1), "Neurônio 1");
+			if(Config.N_NEURONIOS_ESCONDIDOS <= 2)
+				data.add(cont, map.get(2), "Neurônio 2");
+			if(Config.N_NEURONIOS_ESCONDIDOS <= 3)
+				data.add(cont, map.get(3), "Neurônio 3");
+			if(Config.N_NEURONIOS_ESCONDIDOS <= 4)
+				data.add(cont, map.get(4), "Neurônio 4");
+			if(Config.N_NEURONIOS_ESCONDIDOS <= 5)
+				data.add(cont, map.get(5), "Neurônio 5");
 			cont++;
 		}
 		

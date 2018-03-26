@@ -57,28 +57,34 @@ public class RedeNeural {
 		
 		//obtem saidas da camada associativa
 		saidaAssociativa = new double[camadaAssociativa.length];
-		for(int i=0; i<camadaAssociativa.length; i++) {
-			saidaAssociativa[i] = camadaAssociativa[i].ativado(saidaDaEntrada);
-		}
-		
-		//calcula o WTA
-		if(Config.WTA) {
-			double maior = saidaAssociativa[0];
-			int index = 0;
-			for(int i=1; i<saidaAssociativa.length; i++) {
-				if(saidaAssociativa[i] > maior) {
-					maior = saidaAssociativa[i];
-					index = i;
+		if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) {
+			for(int i=0; i<camadaAssociativa.length; i++) {
+				saidaAssociativa[i] = camadaAssociativa[i].ativado(saidaDaEntrada);
+			}
+			
+			//calcula o WTA
+			if(Config.WTA) {
+				double maior = saidaAssociativa[0];
+				int index = 0;
+				for(int i=1; i<saidaAssociativa.length; i++) {
+					if(saidaAssociativa[i] > maior) {
+						maior = saidaAssociativa[i];
+						index = i;
+					}
+				}
+				for(int i=0; i<saidaAssociativa.length; i++)
+				{
+					if(i!=index)
+						saidaAssociativa[i] = 0;
+					else
+						saidaAssociativa[i] = 1;
 				}
 			}
-			for(int i=0; i<saidaAssociativa.length; i++)
-			{
-				if(i!=index)
-					saidaAssociativa[i] = 0;
-				else
-					saidaAssociativa[i] = 1;
-			}
+		} else {
+			for(int i=0; i<camadaAssociativa.length; i++)
+				saidaAssociativa[i] = 0;
 		}
+		
 		
 		
 		//obtem saidas da camada escondida
@@ -87,26 +93,12 @@ public class RedeNeural {
 		 * e entradas da camada associativa. A camada escondida so leva em conta os resultados
 		 * da camada associativa se Auxiliar.USAR_CAMADA_ASSOCIATIVA estiver ativo (true).
 		 */
-		double aux[] = null;
-		if(Auxiliar.USAR_CAMADA_ASSOCIATIVA == false) {
-			aux = new double[camadaAssociativa.length];
-			for(int i=0; i<camadaAssociativa.length; i++)
-				aux[i] = 0;
-		}
 		saidaEscondida= new double[this.camadaEscondida.length];
+		double[] entradaCamadaEscondida = new double[saidaDaEntrada.length + saidaAssociativa.length];
+        System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+        System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
 		for(int i=0; i<camadaEscondida.length; i++) {
-			if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) {
-				double[] entradaCamadaEscondida = new double[saidaDaEntrada.length + saidaAssociativa.length];
-		        System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
-		        System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
-				saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
-			}
-			else {
-				double[] entradaCamadaEscondida = new double[saidaDaEntrada.length + aux.length];
-		        System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
-		        System.arraycopy(aux, 0, entradaCamadaEscondida, saidaDaEntrada.length, aux.length);
-				saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com zeros
-			}
+			saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
 		}
 		
 		if(Config.WTA) {
@@ -148,6 +140,10 @@ public class RedeNeural {
 		return copyCamada(this.camadaEntrada);
 	}
 	
+	public Neuronio[] getNeuroniosAssociativa() throws Exception {
+		return copyCamada(this.camadaAssociativa);
+	}
+	
 	private Neuronio[] copyCamada(Neuronio[] camada) throws Exception {
 		Neuronio escondidaCopia[] = new Neuronio[camada.length];
 		for(int i=0; i<camada.length; i++) {
@@ -160,6 +156,10 @@ public class RedeNeural {
 		return saidaEscondida;
 	}
 	
+	public double[] getSaidaCamadaAssociativa() {
+		return this.saidaAssociativa;
+	}
+	
 	public void setCamadaSaida(Neuronio[] camadaSaida) {
 		this.camadaSaida = camadaSaida;
 	}
@@ -170,6 +170,10 @@ public class RedeNeural {
 	
 	public void setCamadaEntrada(Neuronio[] camadaEntrada) {
 		this.camadaEntrada = camadaEntrada;
+	}
+	
+	public void setCamadaAssociativa(Neuronio[] camadaAssociativa) {
+		this.camadaAssociativa = camadaAssociativa;
 	}
 	
 	public String toString() {
