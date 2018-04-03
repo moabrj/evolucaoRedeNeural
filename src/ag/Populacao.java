@@ -15,15 +15,9 @@ import geral.Config;
 public class Populacao {
 	
 	private LinkedList<Individuo> individuos;
-	private HistoricoEvolutivo historico;
+	private HistoricoEvolutivo[] historico;
 	
-	private int n1 = 0;
-	private int n2 = 0;
-	private int n3 = 0;
-	private int n4 = 0;
-	private int n5 = 0;
-	
-	public Populacao(HistoricoEvolutivo historico) {
+	public Populacao(HistoricoEvolutivo[] historico) {
 		this.historico = historico;
 		this.individuos = new LinkedList<>();
 		for(int i=0; i<Config.N_IND_POP; i++)
@@ -74,10 +68,20 @@ public class Populacao {
 
 	public StringBuilder getAtivacaoMelhor(double[][] ds, int q_linhas, int epoca) throws Exception {
 		StringBuilder ativacaoNeural_str = new StringBuilder();
+		ativacaoNeural_str.append("Geração "+epoca+":");
 		Individuo ind = this.individuos.getFirst();
 		
+		int[] peqInter = {0,0,0,0,0};
+		int[] graInter = {0,0,0,0,0};
+		int[] dirInter = {0,0,0,0,0};
+		int[] esqInter = {0,0,0,0,0};
+		int[] peqAss = {0,0,0,0,0};
+		int[] graAss = {0,0,0,0,0};
+		int[] dirAss = {0,0,0,0,0};
+		int[] esqAss = {0,0,0,0,0};
+		
 		ind.reiniciaRecorrencia();
-		//ativacaoNeural_str.append("\nMelhor Individuo:\n");
+		ativacaoNeural_str.append("\nMelhor Individuo:\n");
 		double entradaAnt = ds[0][7];
 		for(int i=0; i<q_linhas; i++) {
 			if(entradaAnt != ds[i][7]) {
@@ -87,39 +91,58 @@ public class Populacao {
 			double[] saida = ind.atualizaRede(ds[i]);
 			double[] saidaEscondida = ind.ativacaoCamadaInter();
 			double[] saidaAssociativa = ind.ativacaoCamadaAssociativa();
+			boolean ativouCamadaAssociativa = ind.ativouCamadaAssociativa();
 			for(int j=0;j<saidaEscondida.length;j++)
-				ativacaoNeural_str.append(String.valueOf(saidaEscondida[j])+",");
+				ativacaoNeural_str.append(String.valueOf((int)saidaEscondida[j])+" ");
+			ativacaoNeural_str.append("| ");
 			for(int j=0;j<saidaAssociativa.length;j++)
-				ativacaoNeural_str.append(String.valueOf(saidaAssociativa[j])+",");
+				ativacaoNeural_str.append(String.valueOf((int)saidaAssociativa[j])+" ");
+			ativacaoNeural_str.append("|=> ");
 			for(int j=0;j<saida.length;j++)
-				ativacaoNeural_str.append(String.valueOf(saida[j])+",");
+				ativacaoNeural_str.append(String.valueOf((int)saida[j])+" ");
 			ativacaoNeural_str.append("\n");
-			/*
+			
 			int j = posMaximo(saidaEscondida);
 			//montagem grafico
-			if(i < 86) { 
-			//if(i > 85 && i < 129) {
-				if(j == 0)
-					n1++;
-				else if(j==1)
-					n2++;
-				else if(j==2)
-					n3++;
-				else if(j==3)
-					n4++;
-				else if(j==4)
-					n5++;
+			if(i < 43) { //pequeno
+				peqInter[j]++;
+			} else if(i>42 && i<86) { //grande
+				graInter[j]++;
+			} else if(i>85 && i<129) { //direita
+				dirInter[j]++;
+			} else { //esquerda
+				esqInter[j]++;
 			}
-			*/
+			
+			//montagem grafico
+			if(ativouCamadaAssociativa) {
+				j = posMaximo(saidaAssociativa);
+				if(i < 43) { //pequeno
+					peqAss[j]++;
+				} else if(i>42 && i<86) { //grande
+					graAss[j]++;
+				} else if(i>85 && i<129) { //direita
+					dirAss[j]++;
+				} else { //esquerda
+					esqAss[j]++;
+				}
+			}
+			
 		}
 		
-		//double fitnessMax = 86;
-		//Geracao g = new Geracao();
-		//g.addRegistroAtivacao((n1/fitnessMax)*100, (n2/fitnessMax)*100, (n3/fitnessMax)*100, (n4/fitnessMax)*100, (n5/fitnessMax)*100, epoca, this.historico);
+		int [][] vetoresAtivacao = {peqInter, graInter, dirInter, esqInter, peqAss, graAss, dirAss, esqAss};
+		int fitnessMax = 43;
+		for(int i=0;i<Config.NUMERO_CASOS;i++) {
+			Geracao g = new Geracao();
+			g.addRegistroAtivacao(vetoresAtivacao[i], fitnessMax, epoca, this.historico[i], 0);
+		}
+		
 		return ativacaoNeural_str;
 	}
 
+	
 	public void gerarAtivacaoPopulacao(double[] saidaFinal, double[] saidaEscondida, int linha, int qntInd, int epoca, Geracao g) throws Exception {
+		/*
 		StringBuilder neuronioAtivo = this.historico.getListagemAtivacaoNeural();
 		//Individuo ind = this.individuos.getFirst();
 		
@@ -146,8 +169,10 @@ public class Populacao {
 		double fitnessMax = 43*50;
 		g.addRegistroAtivacaoGrafico(epoca, (n1/fitnessMax)*100, (n2/fitnessMax)*100, (n3/fitnessMax)*100, (n4/fitnessMax)*100, (n5/fitnessMax)*100, this.historico);
 		//this.historico.addGeracao(g);
+		 */
 	}
-
+	
+	
 	/**
 	 * Retorna qual neurônio foi ativado para uma dada entrada
 	 * @param v
@@ -168,14 +193,9 @@ public class Populacao {
 		double entradaAnt = entradas[0][7];
 		int qntInd = 0;
 		Geracao g = new Geracao();
-		n1=0;
-		n2=0;
-		n3=0;
-		n4=0;
-		n5=0;
 		for(Individuo ind : individuos) {
 			//para documentacao
-			this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
+			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
 			ind.reiniciaRecorrencia();
 			int fitness = 0;
 			for(int i=0; i<q_linhas; i++) {
@@ -221,14 +241,9 @@ public class Populacao {
 		double entradaAnt = entradas[0][7];
 		int qntInd = 0;
 		Geracao g = new Geracao();
-		n1=0;
-		n2=0;
-		n3=0;
-		n4=0;
-		n5=0;
 		for(Individuo ind : individuos) {
 			ind.reiniciaRecorrencia();
-			this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
+			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
 			int fitness = 0;
 			double[] saida;
 			for(int i=0; i<q_linhas; i++) {
@@ -272,14 +287,9 @@ public class Populacao {
 		double entradaAnt = entradas[0][7];
 		int qntInd = 0;
 		Geracao g = new Geracao();
-		n1=0;
-		n2=0;
-		n3=0;
-		n4=0;
-		n5=0;
 		for(Individuo ind : individuos) {
 			ind.reiniciaRecorrencia();
-			this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
+			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
 			int fitness = 0;
 			double[] saida;
 			for(int i=0; i<q_linhas; i++) {
@@ -338,14 +348,9 @@ public class Populacao {
 		double entradaAnt = entradas[0][7];
 		int qntInd = 0;
 		Geracao g = new Geracao();
-		n1=0;
-		n2=0;
-		n3=0;
-		n4=0;
-		n5=0;
 		for(Individuo ind : individuos) {
 			ind.reiniciaRecorrencia();
-			this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
+			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
 			int fitness = 0;
 			double[] saida;
 			for(int i=0; i<q_linhas; i++) {

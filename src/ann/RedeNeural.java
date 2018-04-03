@@ -15,6 +15,7 @@ public class RedeNeural {
 	private Neuronio camadaSaida[];
 	private double saidaEscondida[];
 	private double saidaAssociativa[];
+	private boolean associativaAtivou = false;
 	
 	/**
 	 * 
@@ -30,22 +31,24 @@ public class RedeNeural {
 		}
 		//criação da camada de entrada
 		this.camadaEntrada = new Neuronio[n_entradas];
-		for(int i=0; i<n_entradas; i++)
+		for(int i=0; i<n_entradas; i++) {
 			this.camadaEntrada[i] = new Neuronio(Config.RECORRENCIA_ENTRADA);
+			this.camadaEntrada[i].setTipoCamada(0);
+		}
 		//criacao da camada intermediaria
 		this.camadaEscondida = new Neuronio[n_neuronios];
 		for(int i=0; i<n_neuronios; i++)
 			this.camadaEscondida[i] = new Neuronio(n_entradas+n_n_associativa, tipo_funcao_ativacao,
-					Config.RECORRENCIA_OUTROS);
+					Config.RECORRENCIA_OUTROS, 1);
 		//criacao da camada intermediaria ASSOCIATIVA
 		this.camadaAssociativa = new Neuronio[n_n_associativa];
 		for(int i=0; i<n_n_associativa; i++)
 			this.camadaAssociativa[i] = new Neuronio(n_entradas, tipo_funcao_ativacao,
-					Config.RECORRENCIA_OUTROS);
+					Config.RECORRENCIA_OUTROS, 2);
 		//criacao da camada de saida
 		this.camadaSaida = new Neuronio[n_saidas];
 		for(int i=0; i<n_saidas; i++)
-			this.camadaSaida[i] = new Neuronio(n_neuronios, Config.FUNCAO_ATIVACAO_SAIDA, Config.RECORRENCIA_OUTROS);
+			this.camadaSaida[i] = new Neuronio(n_neuronios, Config.FUNCAO_ATIVACAO_SAIDA, Config.RECORRENCIA_OUTROS, 3);
 	}
 	
 	public double[] calculaSaida(double[] entradas) {
@@ -56,6 +59,7 @@ public class RedeNeural {
 		}
 		
 		//obtem saidas da camada associativa
+		associativaAtivou = false;
 		saidaAssociativa = new double[camadaAssociativa.length];
 		if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) {
 			for(int i=0; i<camadaAssociativa.length; i++) {
@@ -63,22 +67,38 @@ public class RedeNeural {
 			}
 			
 			//calcula o WTA
+			//Esse WTA é modificado, ele pode sair 0 em todos, mas nunca 1 em todos.
+			//Se o neurônio mais ativo for maior que 0, então temos ativação da camada
+			//caso contrário, não ocorre ativação da camada
 			if(Config.WTA) {
 				double maior = saidaAssociativa[0];
-				int index = 0;
+				int index = 0; //indice no vetor do maior valor
 				for(int i=1; i<saidaAssociativa.length; i++) {
 					if(saidaAssociativa[i] > maior) {
 						maior = saidaAssociativa[i];
+						saidaAssociativa[index] = 0;
 						index = i;
+					} else {
+						saidaAssociativa[i] = 0;
 					}
 				}
+				// só permite a ativação do WTA se o neurônio mais ativo
+				// for maior que 0
+				if(saidaAssociativa[index] > 0) {
+					saidaAssociativa[index] = 1;
+					associativaAtivou = true;
+				} else {
+					saidaAssociativa[index] = 0;
+				}
+				
+				/*
 				for(int i=0; i<saidaAssociativa.length; i++)
 				{
 					if(i!=index)
 						saidaAssociativa[i] = 0;
 					else
 						saidaAssociativa[i] = 1;
-				}
+				} */
 			}
 		} else {
 			for(int i=0; i<camadaAssociativa.length; i++)
@@ -95,9 +115,30 @@ public class RedeNeural {
 		 */
 		saidaEscondida= new double[this.camadaEscondida.length];
 		double[] entradaCamadaEscondida = new double[saidaDaEntrada.length + saidaAssociativa.length];
-        System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
-        System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
-		for(int i=0; i<camadaEscondida.length; i++) {
+		for(int i=0;i<entradaCamadaEscondida.length;i++)
+			entradaCamadaEscondida[i] = 0;
+		
+		//prepara entrada da camada escondida
+        if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) { //entrada composta por: entrada + associativa
+        	if(associativaAtivou) {
+        		for(int i=0;i<saidaDaEntrada.length;i++)
+        			saidaDaEntrada[i] = 0;
+        		System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+        		System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
+        	} else {
+        		System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+            	for(int i=0;i<saidaAssociativa.length;i++)
+            		saidaAssociativa[i] = 0;
+            	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
+        	}
+        } else {
+        	System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+        	for(int i=0;i<saidaAssociativa.length;i++)
+        		saidaAssociativa[i] = 0;
+        	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
+        }
+        //fornece entradas para a camada intermediaria
+        for(int i=0; i<camadaEscondida.length; i++) {
 			saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
 		}
 		
@@ -176,6 +217,10 @@ public class RedeNeural {
 		this.camadaAssociativa = camadaAssociativa;
 	}
 	
+	public boolean ativouCamadaAssociativa() {
+		return this.associativaAtivou;
+	}
+	
 	public String toString() {
 		String strCamadaEntrada = "Camada de Entrada (TAUs): ";
 		for(Neuronio n : this.camadaEntrada) {
@@ -192,7 +237,10 @@ public class RedeNeural {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-			for(int i =0; i<n.getNumeroPesos(); i++) {
+			int limite = n.getNumeroPesos();
+			if(!Config.USAR_BIAS)
+				limite = limite - 1; //não imprime o BIAS
+			for(int i =0; i<limite; i++) {
 				strCamadaEscondida+=" ["+pesos[i]+"]";
 			}
 			strCamadaEscondida+="\n";
@@ -209,7 +257,10 @@ public class RedeNeural {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-			for(int i =0; i<n.getNumeroPesos(); i++) {
+			int limite = n.getNumeroPesos();
+			if(!Config.USAR_BIAS)
+				limite = limite - 1; //não imprime o BIAS
+			for(int i =0; i<limite; i++) {
 				strCamadaAssociativa+=" ["+pesos[i]+"]";
 			}
 			strCamadaAssociativa+="\n";
@@ -226,15 +277,24 @@ public class RedeNeural {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-			for(int i =0; i<n.getNumeroPesos(); i++) {
+			int limite = n.getNumeroPesos();
+			if(!Config.USAR_BIAS)
+				limite = limite - 1; //não imprime o BIAS
+			for(int i =0; i<limite; i++) {
 				strCamadaSaida+=" ["+pesos[i]+"]";
 			}
 			strCamadaSaida+="\n";
 			strCamadaSaidaTaus+=" ["+n.getTau()+"]";
 		}
-		return "\n"+strCamadaEntrada+"\n"+strCamadaEscondida+strCamadaEscondidaTaus
+		
+		if(Config.RECORRENCIA_OUTROS)
+			return "\n"+strCamadaEntrada+"\n"+strCamadaEscondida+strCamadaEscondidaTaus
 				+"\n"+strCamadaAssociativa+strCamadaAssociativaTaus
 				+"\n"+strCamadaSaida+strCamadaSaidaTaus;
+		else
+			return "\n"+strCamadaEntrada+"\n"+strCamadaEscondida
+					+"\n"+strCamadaAssociativa
+					+"\n"+strCamadaSaida;
 	}
 	
 	public void zerarValoresRecorrencia()

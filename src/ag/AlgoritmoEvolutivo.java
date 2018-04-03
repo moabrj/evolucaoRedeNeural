@@ -60,10 +60,10 @@ public class AlgoritmoEvolutivo {
 	private PrintWriter gravarArqAtivacao = null;
 	private JFreeChart grafico;
 	private String nomeArquivo;
-	private HistoricoEvolutivo historico; 
+	private HistoricoEvolutivo[] historico; 
 	
 	public AlgoritmoEvolutivo() throws IOException {
-		this.historico = new HistoricoEvolutivo();
+		this.historico = this.criaListaHistoricoEvolutivo();
 		this.leitor = new LeitorCSV();
 		//this.leitor.getEntradas();
 		this.populacao = new Populacao(this.historico);
@@ -80,7 +80,7 @@ public class AlgoritmoEvolutivo {
 		
 		registraCabecalho();
 	}
-	
+
 	public void evoluir() throws Exception {
 		int cont = 1;
 		CategoryTableXYDataset data = new CategoryTableXYDataset();
@@ -122,10 +122,10 @@ public class AlgoritmoEvolutivo {
 			StringBuilder str_ativacao = null;
 			if(!Config.ATIVACAO_GERAL)
 				str_ativacao = this.populacao.getAtivacaoMelhor(leitor.getEntradas(), leitor.q_linhas, cont);
-			else {
-				str_ativacao = this.historico.getListagemAtivacaoNeural();
-				this.historico.limparHistoricoAtivacaoNeural();
-			}
+			//else {
+			//	str_ativacao = this.historico.getListagemAtivacaoNeural();
+			//	this.historico.limparHistoricoAtivacaoNeural();
+			//}
 			
 			//this.gravarArqAtivacao.println("\n\nGeração "+cont+":");
 			this.gravarArqAtivacao.println(str_ativacao.toString());
@@ -160,25 +160,30 @@ public class AlgoritmoEvolutivo {
 		gravarMelhor.close();
 		gravarMedia.close();
 		
-		/*
-		for(int t=0;t<dataAtivacao.getSeriesCount();t++) {
-			FileWriter arqNeuronio = new FileWriter(nomeArquivo+"-NEURONIO_"+(t+1)+".csv");
-			PrintWriter gravarNeuronio = new PrintWriter(arqNeuronio);
-			
-			//registra dados da evolução da ativação neural em arquivo 
-			for(int i=0;i<Config.N_MAX_GERACOES;i++) {
-				Number x = dataAtivacao.getX(t, i);
-				Number y = dataAtivacao.getY(t, i);
-				gravarNeuronio.println(x+", "+y);
-			}
-			gravarNeuronio.close();
-		}
-		*/
-		
 		//salva gráfico de processo evolutivo
 		grafico = ChartFactory.createXYLineChart("Evolução", "Geração", 
 			    "Fitness", data, PlotOrientation.VERTICAL, true, false, false);
 		this.salvaGrafico("evolucao", 2);
+		
+		
+		for(int k=0;k<Config.NUMERO_CASOS;k++) {
+			this.historico[k].gerarDataset();
+			CategoryTableXYDataset dataAtivacao = this.historico[k].getGraficoDataset();
+			grafico = ChartFactory.createXYLineChart("Ativação Neural", "Geração", 
+				    "Percentual", dataAtivacao, PlotOrientation.VERTICAL, true, false, false);
+			for(int t=0;t<dataAtivacao.getSeriesCount();t++) {
+				FileWriter arqNeuronio = new FileWriter(nomeArquivo+"-H_"+k+"-N_"+(t+1)+".csv");
+				PrintWriter gravarNeuronio = new PrintWriter(arqNeuronio);
+				
+				//registra dados da evolução da ativação neural em arquivo 
+				for(int i=0;i<Config.N_MAX_GERACOES;i++) {
+					Number x = dataAtivacao.getX(t, i);
+					Number y = dataAtivacao.getY(t, i);
+					gravarNeuronio.println(x+", "+y);
+				}
+				gravarNeuronio.close();
+			}
+		}
 		
 		//salva grafico de ativacao neural
 		/*
@@ -230,24 +235,26 @@ public class AlgoritmoEvolutivo {
 			ind.setCamadaEscondida(neuronios);
 			
 			//realiza mutação nos pesos dos neurônios da camada associativa
-			neuronios = ind.getCamadaAssociativa();
-			for(Neuronio neuronio : neuronios) {
-				//altera pesos/bias do neuronio
-				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
-					double[] pesos = new double[neuronio.getNumeroPesos()];
-					for(int i=0; i<neuronio.getNumeroPesos(); i++) {
-						pesos[i] = Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
-					}
-					neuronio.setPesos(pesos);
-					
-					//o tau pode ser mutado ou não
+			if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) {
+				neuronios = ind.getCamadaAssociativa();
+				for(Neuronio neuronio : neuronios) {
+					//altera pesos/bias do neuronio
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
-						double x = rand.nextDouble();
-						neuronio.setTau(x);
+						double[] pesos = new double[neuronio.getNumeroPesos()];
+						for(int i=0; i<neuronio.getNumeroPesos(); i++) {
+							pesos[i] = Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+						}
+						neuronio.setPesos(pesos);
+						
+						//o tau pode ser mutado ou não
+						if(rand.nextDouble() < Config.TAXA_MUTACAO) {
+							double x = rand.nextDouble();
+							neuronio.setTau(x);
+						}
 					}
 				}
+				ind.setCamadaAssociativa(neuronios);
 			}
-			ind.setCamadaAssociativa(neuronios);
 			
 			//realiza mutação nos pesos dos neurônios de saída
 			neuronios = ind.getCamadaSaida();
@@ -403,6 +410,14 @@ public class AlgoritmoEvolutivo {
 		
 		arquivo.close();
 		
+	}
+	
+	private HistoricoEvolutivo[] criaListaHistoricoEvolutivo() {
+		HistoricoEvolutivo[] historicos = new HistoricoEvolutivo[Config.NUMERO_CASOS];
+		for(int i=0; i<Config.NUMERO_CASOS; i++) {
+			historicos[i] = new HistoricoEvolutivo();
+		}
+		return historicos;
 	}
 
 }

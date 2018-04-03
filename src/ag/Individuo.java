@@ -102,6 +102,10 @@ public class Individuo implements Comparable<Individuo>{
 		return this.redeNeural.getSaidaCamadaAssociativa();
 	}
 	
+	public boolean ativouCamadaAssociativa() {
+		return this.redeNeural.ativouCamadaAssociativa();
+	}
+	
 	public void reiniciaRecorrencia()
 	{
 		this.redeNeural.zerarValoresRecorrencia();

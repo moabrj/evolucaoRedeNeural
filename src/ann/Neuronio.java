@@ -2,6 +2,7 @@ package ann;
 
 import java.util.Random;
 
+import geral.Auxiliar;
 import geral.Config;
 
 public class Neuronio {
@@ -12,6 +13,7 @@ public class Neuronio {
 	private boolean recorrencia = false;
 	private boolean tipo_entrada = false; //se true é ativo será neuronio de entrada
 	private int funcaoAtivacao = 1;
+	private int tipoCamada = 1; //camda intermediaria por default
 	
 	
 	private Neuronio() {
@@ -21,18 +23,25 @@ public class Neuronio {
 	
 	/**
 	 * O número de pesos deve ser igual ao número de entradas
+	 * O tipoCamada pode ser 0-Entrada, 1-Intermadiária, 2-Associativa, 3-Saída
 	 * @param n_pesos
 	 * @param tau
+	 * @param recorrencia
+	 * @param tipoCamada
 	 */
-	public Neuronio(int n_pesos, int tipoFuncaoAtivacao, boolean recorrencia) {
+	public Neuronio(int n_pesos, int tipoFuncaoAtivacao, boolean recorrencia, int tipoCamada) {
 		pesos = new double[n_pesos+1]; //+1 para o BIAS
 		this.funcaoAtivacao = tipoFuncaoAtivacao;
 		this.recorrencia = recorrencia;
+		this.tipoCamada = tipoCamada;
 		Random r = Config.random;
 		this.tau = r.nextDouble();
 		for(int i=0;i<n_pesos+1;i++)
 		{
-			pesos[i] = Config.LIMITE_MIN + (r.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+			if(tipoCamada != 2)
+				pesos[i] = Config.LIMITE_MIN + (r.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+			else
+				pesos[i] = 0;
 		}
 	}
 	
@@ -163,6 +172,10 @@ public class Neuronio {
 	public void zeraValorRecorrente()
 	{
 		this.somaAnt = 0;
+	}
+	
+	public void setTipoCamada(int tipo) {
+		this.tipoCamada = tipo;
 	}
 
 }
