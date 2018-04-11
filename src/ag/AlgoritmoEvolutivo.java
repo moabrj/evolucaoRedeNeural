@@ -101,6 +101,7 @@ public class AlgoritmoEvolutivo {
 				if(cont == 50) { //treinar ciclo 1
 					this.leitor.setArquivo(Config.TREINO_CICLO_2);
 					Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
+					Auxiliar.CICLO_2 = true;
 					this.leitor.obterArquivo(); //realizar leitura do arquivo .csv
 				} 
 			}
@@ -209,6 +210,7 @@ public class AlgoritmoEvolutivo {
 			for(Neuronio neuronio : neuronios) {
 				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 					double x = rand.nextDouble();
+					x = Auxiliar.truncate(x);
 					neuronio.setTau(x);
 				}
 			}
@@ -221,13 +223,14 @@ public class AlgoritmoEvolutivo {
 				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 					double[] pesos = new double[neuronio.getNumeroPesos()];
 					for(int i=0; i<neuronio.getNumeroPesos(); i++) {
-						pesos[i] = Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+						pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
 					}
 					neuronio.setPesos(pesos);
 					
 					//o tau pode ser mutado ou não
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 						double x = rand.nextDouble();
+						x = Auxiliar.truncate(x);
 						neuronio.setTau(x);
 					}
 				}
@@ -242,13 +245,14 @@ public class AlgoritmoEvolutivo {
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 						double[] pesos = new double[neuronio.getNumeroPesos()];
 						for(int i=0; i<neuronio.getNumeroPesos(); i++) {
-							pesos[i] = Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+							pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
 						}
 						neuronio.setPesos(pesos);
 						
 						//o tau pode ser mutado ou não
 						if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 							double x = rand.nextDouble();
+							x = Auxiliar.truncate(x);
 							neuronio.setTau(x);
 						}
 					}
@@ -263,12 +267,13 @@ public class AlgoritmoEvolutivo {
 				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 					double[] pesos = new double[neuronio.getNumeroPesos()];
 					for(int i=0; i<neuronio.getNumeroPesos(); i++) {
-						pesos[i] = Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+						pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
 					}
 					neuronio.setPesos(pesos);
 					//o tau pode ser mutado ou não
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 						double x = rand.nextDouble();
+						x = Auxiliar.truncate(x);
 						neuronio.setTau(x);
 					}
 				}

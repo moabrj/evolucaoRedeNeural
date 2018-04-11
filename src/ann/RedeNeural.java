@@ -16,6 +16,7 @@ public class RedeNeural {
 	private double saidaEscondida[];
 	private double saidaAssociativa[];
 	private boolean associativaAtivou = false;
+	private boolean escondidaAtivou = false;
 	
 	/**
 	 * 
@@ -108,6 +109,7 @@ public class RedeNeural {
 		
 		
 		//obtem saidas da camada escondida
+		this.escondidaAtivou = false;
 		/*
 		 * A entrada da camada escondida é composta pelas entradas da camada de entrada
 		 * e entradas da camada associativa. A camada escondida so leva em conta os resultados
@@ -148,9 +150,20 @@ public class RedeNeural {
 			for(int i=1; i<saidaEscondida.length; i++) {
 				if(saidaEscondida[i] > maior) {
 					maior = saidaEscondida[i];
+					saidaEscondida[index] = 0;
 					index = i;
+				} else {
+					saidaEscondida[i] = 0;
 				}
 			}
+			
+			if(saidaEscondida[index] > 0) {
+				saidaEscondida[index] = 1;
+				escondidaAtivou = true;
+			} else {
+				saidaEscondida[index] = 0;
+			}
+			/*
 			for(int i=0; i<saidaEscondida.length; i++)
 			{
 				if(i!=index)
@@ -158,6 +171,7 @@ public class RedeNeural {
 				else
 					saidaEscondida[i] = 1;
 			}
+			*/
 		}
 		
 		//obtem saidas da camada de saida
@@ -302,5 +316,10 @@ public class RedeNeural {
 		for(int i=0;i<camadaEntrada.length;i++) {
 			camadaEntrada[i].zeraValorRecorrente();
 		}
+	}
+
+	public boolean ativouCamadaEscondida() {
+		// TODO Auto-generated method stub
+		return this.escondidaAtivou;
 	}
 }

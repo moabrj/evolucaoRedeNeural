@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
+import geral.Auxiliar;
 import geral.Config;
 
 public class Populacao {
@@ -92,28 +93,33 @@ public class Populacao {
 			double[] saidaEscondida = ind.ativacaoCamadaInter();
 			double[] saidaAssociativa = ind.ativacaoCamadaAssociativa();
 			boolean ativouCamadaAssociativa = ind.ativouCamadaAssociativa();
+			boolean ativouCamadaEscandida = ind.ativouCamadaEscondida();
 			for(int j=0;j<saidaEscondida.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saidaEscondida[j])+" ");
 			ativacaoNeural_str.append("| ");
 			for(int j=0;j<saidaAssociativa.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saidaAssociativa[j])+" ");
+			//tipo de ativacao - camada associativa ou caminho normal
+			ativacaoNeural_str.append("| "+ativouCamadaAssociativa+" ");
 			ativacaoNeural_str.append("|=> ");
 			for(int j=0;j<saida.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saida[j])+" ");
 			ativacaoNeural_str.append("\n");
 			
-			int j = posMaximo(saidaEscondida);
-			//montagem grafico
-			if(i < 43) { //pequeno
-				peqInter[j]++;
-			} else if(i>42 && i<86) { //grande
-				graInter[j]++;
-			} else if(i>85 && i<129) { //direita
-				dirInter[j]++;
-			} else { //esquerda
-				esqInter[j]++;
+			int j = -1;
+			if(ativouCamadaEscandida) {
+				j = posMaximo(saidaEscondida);
+				//montagem grafico
+				if(i < 43) { //pequeno
+					peqInter[j]++;
+				} else if(i>42 && i<86) { //grande
+					graInter[j]++;
+				} else if(i>85 && i<129) { //direita
+					dirInter[j]++;
+				} else { //esquerda
+					esqInter[j]++;
+				}
 			}
-			
 			//montagem grafico
 			if(ativouCamadaAssociativa) {
 				j = posMaximo(saidaAssociativa);
@@ -244,7 +250,7 @@ public class Populacao {
 		for(Individuo ind : individuos) {
 			ind.reiniciaRecorrencia();
 			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
-			int fitness = 0;
+			double fitness = 0;
 			double[] saida;
 			for(int i=0; i<q_linhas; i++) {
 				if(entradaAnt != entradas[i][7]) {
@@ -255,7 +261,7 @@ public class Populacao {
 				saida = ind.atualizaRede(entradas[i]);
 				@SuppressWarnings("unused")
 				double[] saidaEscondida = ind.ativacaoCamadaInter();
-				
+				double fitnessAnt = fitness;
 				//aproximar
 				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0)
                     fitness += 1;
@@ -266,6 +272,20 @@ public class Populacao {
                     fitness += 1;
 				else if (entradas[i][7] == 1 && saida[0] != 0 && saida[1] != 1)
                     fitness -= 1;
+				
+				//para testes
+				//pune individuos que não utilizam o caminho com camada associativa
+				//decrementando o fitness
+				/*
+				if(Auxiliar.USAR_CAMADA_ASSOCIATIVA && Auxiliar.TREINO_COM_CICLOS) {
+					if(i < 86) { //entradas de movimento para esquerda e direita
+						if(fitness > fitnessAnt) {
+							if(!ind.ativouCamadaAssociativa()) //ativou caminho normal
+								fitness-=1;
+						}
+					}
+				}
+				*/
 				
 				//para registro
 				if(Config.ATIVACAO_GERAL)

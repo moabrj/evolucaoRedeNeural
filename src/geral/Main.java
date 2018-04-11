@@ -1,4 +1,8 @@
 package geral;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Random;
+
 import ag.AlgoritmoEvolutivo;
 import ann.Neuronio;
 import ann.RedeNeural;
@@ -11,7 +15,33 @@ public class Main {
 		AlgoritmoEvolutivo ae = new AlgoritmoEvolutivo();
 		ae.evoluir();
 		
+		/*
+		LeitorCSV leitor = new LeitorCSV();
+		leitor.setArquivo(Config.TREINO_CICLO_2);
+		leitor.obterArquivo();
 		
+		Random r = Config.random;
+		
+		double[][] entradas = leitor.getEntradas();
+		StringBuilder saida = new StringBuilder();
+		for(int i =0;i<leitor.q_linhas;i++) {
+			String str = null;
+			for(int j=0; j<7; j++) {
+				double value = (0.009 + (r.nextDouble() * (0.009 + 0.009)));
+				str = String.valueOf(Auxiliar.truncateFour(entradas[i][j] + value))+",";
+				saida.append(str);
+			}
+			saida.append(entradas[i][7]+"\n");
+			System.out.println(i);
+		}
+		FileWriter arq = new FileWriter("treino_ciclo_ruido.csv");
+		PrintWriter gravar = new PrintWriter(arq);
+		
+		gravar.print(saida.toString());
+		
+		arq.close();
+		gravar.close();
+		*/
 		
 		//*/
 		

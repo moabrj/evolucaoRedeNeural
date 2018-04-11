@@ -9,7 +9,7 @@ import geral.Config;
 public class Individuo implements Comparable<Individuo>{
 	
 	private RedeNeural redeNeural;
-	private int fitness = -999;
+	private double fitness = -999;
 	
 	public Individuo() {
 		this.redeNeural = new RedeNeural(Config.N_ENTRADAS, 
@@ -58,11 +58,11 @@ public class Individuo implements Comparable<Individuo>{
 		this.redeNeural.setCamadaEntrada(camadaEntrada);
 	}
 	
-	public void setFitness(int fitness) {
+	public void setFitness(double fitness) {
 		this.fitness = fitness;
 	}
 	
-	public int getFitness() {
+	public double getFitness() {
 		return fitness;
 	}
 
@@ -109,6 +109,10 @@ public class Individuo implements Comparable<Individuo>{
 	public void reiniciaRecorrencia()
 	{
 		this.redeNeural.zerarValoresRecorrencia();
+	}
+
+	public boolean ativouCamadaEscondida() {
+		return this.redeNeural.ativouCamadaEscondida();
 	}
 
 }

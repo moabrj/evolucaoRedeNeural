@@ -18,7 +18,7 @@ public class Neuronio {
 	
 	private Neuronio() {
 		Random r = Config.random;
-		this.tau = r.nextDouble();
+		this.tau = Auxiliar.truncate(r.nextDouble());
 	}
 	
 	/**
@@ -35,11 +35,11 @@ public class Neuronio {
 		this.recorrencia = recorrencia;
 		this.tipoCamada = tipoCamada;
 		Random r = Config.random;
-		this.tau = r.nextDouble();
+		this.tau = Auxiliar.truncate(r.nextDouble());
 		for(int i=0;i<n_pesos+1;i++)
 		{
 			if(tipoCamada != 2)
-				pesos[i] = Config.LIMITE_MIN + (r.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN));
+				pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (r.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
 			else
 				pesos[i] = 0;
 		}
@@ -56,7 +56,7 @@ public class Neuronio {
 		this.recorrencia = recorrencia;
 		this.tipo_entrada = true;
 		Random r = Config.random;
-		this.tau = r.nextDouble();
+		this.tau = Auxiliar.truncate(r.nextDouble());
 	}
 	
 	public double[] getPesos() throws Exception {
