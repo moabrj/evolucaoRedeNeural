@@ -262,30 +262,26 @@ public class Populacao {
 				@SuppressWarnings("unused")
 				double[] saidaEscondida = ind.ativacaoCamadaInter();
 				double fitnessAnt = fitness;
-				//aproximar
+				//o fitness só é contabilizado se a rede der resposta
+				//se a resposta for 0 0, nenhum ponto é retirado
+					//aproximar
 				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0)
                     fitness += 1;
-				else if (entradas[i][7] == 0 && saida[0] != 1 && saida[1] != 0)
+				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 0)
+                    continue;
+				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 1)
+                    fitness -= 1;
+				else if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 1)
                     fitness -= 1;
 				//afastar
 				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 1)
                     fitness += 1;
-				else if (entradas[i][7] == 1 && saida[0] != 0 && saida[1] != 1)
+				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 0)
+                    continue;
+				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 0)
                     fitness -= 1;
-				
-				//para testes
-				//pune individuos que não utilizam o caminho com camada associativa
-				//decrementando o fitness
-				/*
-				if(Auxiliar.USAR_CAMADA_ASSOCIATIVA && Auxiliar.TREINO_COM_CICLOS) {
-					if(i < 86) { //entradas de movimento para esquerda e direita
-						if(fitness > fitnessAnt) {
-							if(!ind.ativouCamadaAssociativa()) //ativou caminho normal
-								fitness-=1;
-						}
-					}
-				}
-				*/
+				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 1)
+                    fitness -= 1;
 				
 				//para registro
 				if(Config.ATIVACAO_GERAL)

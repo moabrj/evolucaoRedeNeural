@@ -23,9 +23,10 @@ public class Neuronio {
 	
 	/**
 	 * O número de pesos deve ser igual ao número de entradas
+	 * O tipoFuncaoAtivacao pode ser 1-hiperbolica, 2-sigmoide,3-degrau,-1-WTA(Repassa a saída)
 	 * O tipoCamada pode ser 0-Entrada, 1-Intermadiária, 2-Associativa, 3-Saída
 	 * @param n_pesos
-	 * @param tau
+	 * @param tipoFuncaoAtivacao
 	 * @param recorrencia
 	 * @param tipoCamada
 	 */
@@ -65,13 +66,14 @@ public class Neuronio {
 		return pesos;
 	}
 	
-	public double ativado(double entradas[]) {
+	public double ativado(double entradas[]) throws Exception {
 		double soma = 0;
 		//somatorio
 		if(!tipo_entrada) { //se não for do tipo entrada
 			for(int i=0; i<entradas.length;i++)
 				soma+=(entradas[i]*pesos[i]);
-			soma+=pesos[pesos.length-1] + (somaAnt*tau); //BIAS + (somaAnt * tau)
+			if(Config.USAR_BIAS)
+				soma+=pesos[pesos.length-1] + (somaAnt*tau); //BIAS + (somaAnt * tau)
 			if(recorrencia)
 				somaAnt = soma;
 			
@@ -94,7 +96,7 @@ public class Neuronio {
 		return soma;
 	}
 	
-	private double funcaoAtivacao(double entrada) {
+	private double funcaoAtivacao(double entrada) throws Exception {
 		double resposta;
 		if(funcaoAtivacao == 1) { //tangente hiperbolico
 			resposta = Math.tanh(entrada);
@@ -111,18 +113,18 @@ public class Neuronio {
 			else
 				return 0;
 		} else if ( funcaoAtivacao == 3 ) {
-			if(entrada > 10)
-				entrada = 10;
-			else if (entrada < -10)
-				entrada = -10;
-			resposta = (entrada + 10)/20;
-			if(resposta >= 0.5)
+			if(entrada > 1)
+				entrada = 1;
+			else if (entrada < -1)
+				entrada = -1;
+			resposta = (entrada + 1)/2;
+			if(resposta > 0.5)
 				return 1;
 			else
 				return 0;
-		}
-		else //para WTA
+		}else //para WTA
 			return entrada;
+		
 	}
 	
 	public double getTau() {

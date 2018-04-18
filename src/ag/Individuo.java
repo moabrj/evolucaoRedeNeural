@@ -17,7 +17,7 @@ public class Individuo implements Comparable<Individuo>{
 				Config.N_SAIDAS);
 	}
 	
-	public double[] atualizaRede(double[] entradas) {
+	public double[] atualizaRede(double[] entradas) throws Exception {
 		if(fitness == 108)
 			fitness = 108;
 		double[] e_copy = entradas;

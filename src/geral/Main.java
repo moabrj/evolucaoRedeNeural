@@ -11,13 +11,14 @@ import coppelia.*;
 public class Main {
 	
 	public static void main(String[] args) throws Exception {
-		///*
+		
 		AlgoritmoEvolutivo ae = new AlgoritmoEvolutivo();
 		ae.evoluir();
 		
 		/*
 		LeitorCSV leitor = new LeitorCSV();
-		leitor.setArquivo(Config.TREINO_CICLO_2);
+		//leitor.setArquivo(Config.TREINO_CICLO_2);
+		leitor.setArquivo("C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\alvo_peq_duplo.csv");
 		leitor.obterArquivo();
 		
 		Random r = Config.random;
@@ -34,7 +35,7 @@ public class Main {
 			saida.append(entradas[i][7]+"\n");
 			System.out.println(i);
 		}
-		FileWriter arq = new FileWriter("treino_ciclo_ruido.csv");
+		FileWriter arq = new FileWriter("alvo_duplo_ruido.csv");
 		PrintWriter gravar = new PrintWriter(arq);
 		
 		gravar.print(saida.toString());

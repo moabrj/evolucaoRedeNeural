@@ -26,10 +26,8 @@ public class RedeNeural {
 	 * @param n_saidas (Numero de neuronios de saida)
 	 */
 	public RedeNeural(int n_entradas, int n_neuronios, int n_n_associativa, int n_saidas) {
-		int tipo_funcao_ativacao = 1;
-		if(Config.WTA) {
-			tipo_funcao_ativacao = -1;
-		}
+		int tipo_funcao_ativacao = Config.FUNCAO_ATIVACAO_OUTROS;
+		
 		//criação da camada de entrada
 		this.camadaEntrada = new Neuronio[n_entradas];
 		for(int i=0; i<n_entradas; i++) {
@@ -52,7 +50,7 @@ public class RedeNeural {
 			this.camadaSaida[i] = new Neuronio(n_neuronios, Config.FUNCAO_ATIVACAO_SAIDA, Config.RECORRENCIA_OUTROS, 3);
 	}
 	
-	public double[] calculaSaida(double[] entradas) {
+	public double[] calculaSaida(double[] entradas) throws Exception {
 		//obtem saidas da camada de entrada
 		double saidaDaEntrada[] = new double[entradas.length];
 		for(int i=0; i<camadaEntrada.length; i++) {
@@ -85,7 +83,7 @@ public class RedeNeural {
 				}
 				// só permite a ativação do WTA se o neurônio mais ativo
 				// for maior que 0
-				if(saidaAssociativa[index] > 0) {
+				if(saidaAssociativa[index] > 2) {
 					saidaAssociativa[index] = 1;
 					associativaAtivou = true;
 				} else {
@@ -157,7 +155,7 @@ public class RedeNeural {
 				}
 			}
 			
-			if(saidaEscondida[index] > 0) {
+			if(saidaEscondida[index] >= 10) {
 				saidaEscondida[index] = 1;
 				escondidaAtivou = true;
 			} else {

@@ -100,7 +100,8 @@ public class AlgoritmoEvolutivo {
 			{
 				if(cont == 50) { //treinar ciclo 1
 					this.leitor.setArquivo(Config.TREINO_CICLO_2);
-					Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
+					//Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
+					Auxiliar.CICLO_1 = false;
 					Auxiliar.CICLO_2 = true;
 					this.leitor.obterArquivo(); //realizar leitura do arquivo .csv
 				} 
