@@ -8,17 +8,19 @@ import geral.Config;
 public class Neuronio {
 	
 	private double pesos[];
-	private double tau;
+	private double tau = 0;
 	private double somaAnt = 0;
 	private boolean recorrencia = false;
 	private boolean tipo_entrada = false; //se true é ativo será neuronio de entrada
 	private int funcaoAtivacao = 1;
 	private int tipoCamada = 1; //camda intermediaria por default
-	
+	private final double _tau = 0.8;
 	
 	private Neuronio() {
 		Random r = Config.random;
-		this.tau = Auxiliar.truncate(r.nextDouble());
+		double v = (Config.LIMITE_MIN_TAU + (r.nextDouble() * (Config.LIMITE_MAX_TAU - Config.LIMITE_MIN_TAU)));
+		this.tau = Auxiliar.truncate(v);
+		//this.tau = _tau;
 	}
 	
 	/**
@@ -36,13 +38,21 @@ public class Neuronio {
 		this.recorrencia = recorrencia;
 		this.tipoCamada = tipoCamada;
 		Random r = Config.random;
-		this.tau = Auxiliar.truncate(r.nextDouble());
+		this.tau = Auxiliar.truncate((Config.LIMITE_MIN_TAU + (r.nextDouble() * (Config.LIMITE_MAX_TAU - Config.LIMITE_MIN_TAU))));
+		//this.tau = _tau;
 		for(int i=0;i<n_pesos+1;i++)
 		{
-			if(tipoCamada != 2)
+			if(tipoCamada != 2) //não for associativa
 				pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (r.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
 			else
 				pesos[i] = 0;
+		}
+		
+		//pesos ligados na camada escondida são zerados
+		if(tipoCamada == 1) { //camada escondida
+			//pesos[n_pesos-1] é BIAS
+			pesos[n_pesos-1] = 0; //ultimo
+			pesos[n_pesos-2] = 0; //penultimo
 		}
 	}
 	
@@ -58,6 +68,7 @@ public class Neuronio {
 		this.tipo_entrada = true;
 		Random r = Config.random;
 		this.tau = Auxiliar.truncate(r.nextDouble());
+		//this.tau = this._tau;
 	}
 	
 	public double[] getPesos() throws Exception {

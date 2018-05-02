@@ -18,24 +18,34 @@ public class Main {
 		/*
 		LeitorCSV leitor = new LeitorCSV();
 		//leitor.setArquivo(Config.TREINO_CICLO_2);
-		leitor.setArquivo("C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\alvo_peq_duplo.csv");
+		leitor.setArquivo("C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\3\\pequeno.csv");
 		leitor.obterArquivo();
 		
 		Random r = Config.random;
 		
 		double[][] entradas = leitor.getEntradas();
 		StringBuilder saida = new StringBuilder();
+		double value = 10;
 		for(int i =0;i<leitor.q_linhas;i++) {
 			String str = null;
+			value-=0.2;
 			for(int j=0; j<7; j++) {
-				double value = (0.009 + (r.nextDouble() * (0.009 + 0.009)));
-				str = String.valueOf(Auxiliar.truncateFour(entradas[i][j] + value))+",";
-				saida.append(str);
+				if(entradas[i][j] > 0) {
+					//double value = (0.009 + (r.nextDouble() * (0.009 + 0.009)));
+					//double value = 5;
+					double v = (0.009 + (r.nextDouble() * (0.009 + 0.009)));
+					str = String.valueOf(Auxiliar.truncateFour(entradas[i][j] + value + v))+",";
+					saida.append(str);
+				} else {
+					double v = (0.009 + (r.nextDouble() * (0.009 + 0.009)));
+					str = String.valueOf(Auxiliar.truncateFour(entradas[i][j] + v))+",";
+					saida.append(str);
+				}
 			}
 			saida.append(entradas[i][7]+"\n");
 			System.out.println(i);
 		}
-		FileWriter arq = new FileWriter("alvo_duplo_ruido.csv");
+		FileWriter arq = new FileWriter("pequeno2.csv");
 		PrintWriter gravar = new PrintWriter(arq);
 		
 		gravar.print(saida.toString());

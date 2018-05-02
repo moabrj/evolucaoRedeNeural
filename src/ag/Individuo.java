@@ -10,11 +10,13 @@ public class Individuo implements Comparable<Individuo>{
 	
 	private RedeNeural redeNeural;
 	private double fitness = -999;
-	
+	private String id = null;
+
 	public Individuo() {
 		this.redeNeural = new RedeNeural(Config.N_ENTRADAS, 
 				Config.N_NEURONIOS_ESCONDIDOS, Config.N_NEURONIOS_ASSOCIATIVA,
 				Config.N_SAIDAS);
+		this.id = new String(String.valueOf(System.identityHashCode(this)));
 	}
 	
 	public double[] atualizaRede(double[] entradas) throws Exception {
@@ -35,7 +37,7 @@ public class Individuo implements Comparable<Individuo>{
 	}
 	
 	public Neuronio[] getCamadaEntrada() throws Exception {
-		return this.redeNeural.getNeuroniosEntrada();
+		return this.redeNeural.getNeuroniosEntradaSemRecorrencia();
 	}
 	
 	public Neuronio[] getCamadaAssociativa() throws Exception {
@@ -55,7 +57,7 @@ public class Individuo implements Comparable<Individuo>{
 	}
 	
 	public void setCamadaEntrada(Neuronio[] camadaEntrada) {
-		this.redeNeural.setCamadaEntrada(camadaEntrada);
+		this.redeNeural.setCamadaEntradaSemRecorrencia(camadaEntrada);
 	}
 	
 	public void setFitness(double fitness) {
@@ -81,6 +83,7 @@ public class Individuo implements Comparable<Individuo>{
 		ind.setCamadaEscondida(this.getCamadaEscondida());
 		ind.setCamadaSaida(this.getCamadaSaida());
 		ind.setCamadaAssociativa(this.getCamadaAssociativa());
+		//ind.setID(this.getID());
 		//ind.setFitness(this.getFitness());
 		return ind;
 	}
@@ -113,6 +116,14 @@ public class Individuo implements Comparable<Individuo>{
 
 	public boolean ativouCamadaEscondida() {
 		return this.redeNeural.ativouCamadaEscondida();
+	}
+
+	public String getID() {
+		return new String(this.id);
+	}
+	
+	public void setID(String id) {
+		this.id = id;
 	}
 
 }

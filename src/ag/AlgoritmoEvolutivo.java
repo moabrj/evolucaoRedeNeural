@@ -90,6 +90,8 @@ public class AlgoritmoEvolutivo {
 		{
 			this.leitor.setArquivo(Config.TREINO_CICLO_1);
 			Auxiliar.USAR_CAMADA_ASSOCIATIVA = false;
+			Auxiliar.CICLO_1 = true;
+			Auxiliar.CICLO_2 = false;
 		}
 		this.leitor.obterArquivo();
 		
@@ -100,7 +102,7 @@ public class AlgoritmoEvolutivo {
 			{
 				if(cont == 50) { //treinar ciclo 1
 					this.leitor.setArquivo(Config.TREINO_CICLO_2);
-					//Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
+					Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
 					Auxiliar.CICLO_1 = false;
 					Auxiliar.CICLO_2 = true;
 					this.leitor.obterArquivo(); //realizar leitura do arquivo .csv
@@ -119,7 +121,7 @@ public class AlgoritmoEvolutivo {
 			data.add(cont, this.populacao.getMediaFitnessPop(), "Média");
 			//seleciona os 10 melhores
 			this.populacao.selecionaMelhores();
-			
+			//double fitnessAtual = this.populacao.getMelhorFitness();
 			//salva dados de ativacao do melhor individuo
 			StringBuilder str_ativacao = null;
 			if(!Config.ATIVACAO_GERAL)
@@ -138,7 +140,7 @@ public class AlgoritmoEvolutivo {
 			
 			//preenche o restante da população com mutações dos melhores
 			this.mutacao();
-			
+			//Config.adaptacaoLimitesPesos(fitnessAtual);
 			cont++;
 		}
 		this.arq.close();
@@ -207,10 +209,11 @@ public class AlgoritmoEvolutivo {
 			
 			//nesta parte são alterados todos os pesos se o neurônio for selecionado
 			//também é escolhida uma camada a ser alterada
+			
 			Neuronio[] neuronios = ind.getCamadaEntrada();
 			for(Neuronio neuronio : neuronios) {
 				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
-					double x = rand.nextDouble();
+					double x = (Config.LIMITE_MIN_TAU + (rand.nextDouble() * (Config.LIMITE_MAX_TAU - Config.LIMITE_MIN_TAU)));
 					x = Auxiliar.truncate(x);
 					neuronio.setTau(x);
 				}
@@ -223,14 +226,19 @@ public class AlgoritmoEvolutivo {
 				//altera pesos/bias do neuronio
 				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 					double[] pesos = new double[neuronio.getNumeroPesos()];
-					for(int i=0; i<neuronio.getNumeroPesos(); i++) {
-						pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
-					}
+					if(!Auxiliar.CICLO_1) //permite evoluir pesos ligados a camada associativa
+						for(int i=0; i<neuronio.getNumeroPesos(); i++) {
+							pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
+						}
+					else
+						for(int i=0; i<neuronio.getNumeroPesos()-3; i++) { //o vetor de pesos tem o BIAS
+							pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
+						}
 					neuronio.setPesos(pesos);
 					
 					//o tau pode ser mutado ou não
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
-						double x = rand.nextDouble();
+						double x = (Config.LIMITE_MIN_TAU + (rand.nextDouble() * (Config.LIMITE_MAX_TAU - Config.LIMITE_MIN_TAU)));
 						x = Auxiliar.truncate(x);
 						neuronio.setTau(x);
 					}
@@ -252,7 +260,7 @@ public class AlgoritmoEvolutivo {
 						
 						//o tau pode ser mutado ou não
 						if(rand.nextDouble() < Config.TAXA_MUTACAO) {
-							double x = rand.nextDouble();
+							double x = (Config.LIMITE_MIN_TAU + (rand.nextDouble() * (Config.LIMITE_MAX_TAU - Config.LIMITE_MIN_TAU)));
 							x = Auxiliar.truncate(x);
 							neuronio.setTau(x);
 						}
@@ -273,7 +281,7 @@ public class AlgoritmoEvolutivo {
 					neuronio.setPesos(pesos);
 					//o tau pode ser mutado ou não
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
-						double x = rand.nextDouble();
+						double x = (Config.LIMITE_MIN_TAU + (rand.nextDouble() * (Config.LIMITE_MAX_TAU - Config.LIMITE_MIN_TAU)));
 						x = Auxiliar.truncate(x);
 						neuronio.setTau(x);
 					}
@@ -297,7 +305,9 @@ public class AlgoritmoEvolutivo {
 		gravarArq.println("Taxa de mutação: "+Config.TAXA_MUTACAO);
 		gravarArq.println("Arquivo usado: "+Config.NOME_ARQUIVO);
 		gravarArq.println("Recorrência de entrada = "+Config.RECORRENCIA_ENTRADA
-				+", Recorrência em outras camadas = "+Config.RECORRENCIA_OUTROS);
+				+", Recorrência escondida = "+Config.RECORRENCIA_ESCONDIDA+
+				", Recorrência associativa = "+Config.RECORRENCIA_ASSOCIATIVA+
+				", Recorrência de saida = "+Config.RECORRENCIA_SAIDA);
 		gravarArq.println("Semente do random: "+Config.SEMENTE);
 		gravarArq.println();
 	}

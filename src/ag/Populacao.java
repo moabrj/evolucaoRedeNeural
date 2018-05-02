@@ -82,7 +82,7 @@ public class Populacao {
 		int[] esqAss = {0,0,0,0,0};
 		
 		ind.reiniciaRecorrencia();
-		ativacaoNeural_str.append("\nMelhor Individuo:\n");
+		ativacaoNeural_str.append("\nMelhor Individuo - ID: "+ind.getID()+"\n");
 		double entradaAnt = ds[0][7];
 		for(int i=0; i<q_linhas; i++) {
 			if(entradaAnt != ds[i][7]) {
@@ -94,17 +94,28 @@ public class Populacao {
 			double[] saidaAssociativa = ind.ativacaoCamadaAssociativa();
 			boolean ativouCamadaAssociativa = ind.ativouCamadaAssociativa();
 			boolean ativouCamadaEscandida = ind.ativouCamadaEscondida();
+			
+			if(i == 0)
+				ativacaoNeural_str.append("--- PEQUENO -----------------\n");
+			
 			for(int j=0;j<saidaEscondida.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saidaEscondida[j])+" ");
 			ativacaoNeural_str.append("| ");
 			for(int j=0;j<saidaAssociativa.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saidaAssociativa[j])+" ");
 			//tipo de ativacao - camada associativa ou caminho normal
-			ativacaoNeural_str.append("| "+ativouCamadaAssociativa+" ");
+			//ativacaoNeural_str.append("| "+ativouCamadaAssociativa+" ");
 			ativacaoNeural_str.append("|=> ");
 			for(int j=0;j<saida.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saida[j])+" ");
 			ativacaoNeural_str.append("\n");
+			
+			if(i == 42)
+				ativacaoNeural_str.append("--- GRANDE -----------------\n");
+			if(i == 85)
+				ativacaoNeural_str.append("--- DIREITA ----------------\n");
+			if(i == 128)
+				ativacaoNeural_str.append("--- ESQUERDA ---------------\n");
 			
 			int j = -1;
 			if(ativouCamadaEscandida) {
@@ -262,13 +273,20 @@ public class Populacao {
 				@SuppressWarnings("unused")
 				double[] saidaEscondida = ind.ativacaoCamadaInter();
 				double fitnessAnt = fitness;
+				
+				/*
+				if(ind.ativouCamadaAssociativa() && i>85)
+					fitness+=2;
+				else if(ind.ativouCamadaAssociativa() && i<=85)
+					fitness-=2;
+				*/
 				//o fitness só é contabilizado se a rede der resposta
 				//se a resposta for 0 0, nenhum ponto é retirado
-					//aproximar
+				//aproximar
 				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0)
                     fitness += 1;
 				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 0)
-                    continue;
+					continue;
 				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 1)
                     fitness -= 1;
 				else if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 1)
@@ -277,7 +295,7 @@ public class Populacao {
 				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 1)
                     fitness += 1;
 				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 0)
-                    continue;
+					continue;
 				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 0)
                     fitness -= 1;
 				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 1)
