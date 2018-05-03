@@ -83,21 +83,12 @@ public class RedeNeural {
 				}
 				// só permite a ativação do WTA se o neurônio mais ativo
 				// for maior que 0
-				if(saidaAssociativa[index] > 2) {
+				if(saidaAssociativa[index] > 0) {
 					saidaAssociativa[index] = 1;
 					associativaAtivou = true;
 				} else {
 					saidaAssociativa[index] = 0;
 				}
-				
-				/*
-				for(int i=0; i<saidaAssociativa.length; i++)
-				{
-					if(i!=index)
-						saidaAssociativa[i] = 0;
-					else
-						saidaAssociativa[i] = 1;
-				} */
 			}
 		} else {
 			for(int i=0; i<camadaAssociativa.length; i++)
@@ -155,21 +146,12 @@ public class RedeNeural {
 				}
 			}
 			
-			if(saidaEscondida[index] >= 10) {
+			if(saidaEscondida[index] >= 0) {
 				saidaEscondida[index] = 1;
 				escondidaAtivou = true;
 			} else {
 				saidaEscondida[index] = 0;
 			}
-			/*
-			for(int i=0; i<saidaEscondida.length; i++)
-			{
-				if(i!=index)
-					saidaEscondida[i] = 0;
-				else
-					saidaEscondida[i] = 1;
-			}
-			*/
 		}
 		
 		//obtem saidas da camada de saida

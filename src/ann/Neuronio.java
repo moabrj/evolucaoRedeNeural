@@ -8,7 +8,7 @@ import geral.Config;
 public class Neuronio {
 	
 	private double pesos[];
-	private double tau;
+	private double tau = 0;
 	private double somaAnt = 0;
 	private boolean recorrencia = false;
 	private boolean tipo_entrada = false; //se true é ativo será neuronio de entrada
@@ -18,7 +18,10 @@ public class Neuronio {
 	
 	private Neuronio() {
 		Random r = Config.random;
-		this.tau = Auxiliar.truncate(r.nextDouble());
+		if(Config.RECORRENCIA_ENTRADA_FIXA)
+			this.tau = Config.VALOR_TAU_FIXO;
+		else
+			this.tau = Auxiliar.truncate(r.nextDouble());
 	}
 	
 	/**
@@ -36,13 +39,24 @@ public class Neuronio {
 		this.recorrencia = recorrencia;
 		this.tipoCamada = tipoCamada;
 		Random r = Config.random;
-		this.tau = Auxiliar.truncate(r.nextDouble());
+		if(Config.RECORRENCIA_ENTRADA_FIXA)
+			this.tau = Config.VALOR_TAU_FIXO;
+		else
+			this.tau = Auxiliar.truncate(r.nextDouble());
+		
 		for(int i=0;i<n_pesos+1;i++)
 		{
-			if(tipoCamada != 2)
+			if(tipoCamada != 2) //não for associativa
 				pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (r.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));
 			else
 				pesos[i] = 0;
+		}
+		
+		//pesos ligados na camada escondida são zerados
+		if(tipoCamada == 1) { //camada escondida
+			//pesos[n_pesos-1] é BIAS
+			pesos[n_pesos-1] = 0; //ultimo
+			pesos[n_pesos-2] = 0; //penultimo
 		}
 	}
 	
@@ -57,7 +71,11 @@ public class Neuronio {
 		this.recorrencia = recorrencia;
 		this.tipo_entrada = true;
 		Random r = Config.random;
-		this.tau = Auxiliar.truncate(r.nextDouble());
+		
+		if(Config.RECORRENCIA_ENTRADA_FIXA)
+			this.tau = Config.VALOR_TAU_FIXO;
+		else
+			this.tau = Auxiliar.truncate(r.nextDouble());
 	}
 	
 	public double[] getPesos() throws Exception {

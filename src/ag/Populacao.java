@@ -89,25 +89,35 @@ public class Populacao {
 				ind.reiniciaRecorrencia();
 				entradaAnt = ds[i][7];
 			}
+			
+			if(i == 0)
+				ativacaoNeural_str.append("Pequeno\n");
+			if(i == 43)
+				ativacaoNeural_str.append("Grande\n");
+			if(i == 86)
+				ativacaoNeural_str.append("Direita\n");
+			if(i == 129)
+				ativacaoNeural_str.append("Esquerda\n");
+			
 			double[] saida = ind.atualizaRede(ds[i]);
 			double[] saidaEscondida = ind.ativacaoCamadaInter();
 			double[] saidaAssociativa = ind.ativacaoCamadaAssociativa();
 			boolean ativouCamadaAssociativa = ind.ativouCamadaAssociativa();
-			boolean ativouCamadaEscandida = ind.ativouCamadaEscondida();
+			boolean ativouCamadaEscondida = ind.ativouCamadaEscondida();
 			for(int j=0;j<saidaEscondida.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saidaEscondida[j])+" ");
 			ativacaoNeural_str.append("| ");
 			for(int j=0;j<saidaAssociativa.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saidaAssociativa[j])+" ");
 			//tipo de ativacao - camada associativa ou caminho normal
-			ativacaoNeural_str.append("| "+ativouCamadaAssociativa+" ");
+			//ativacaoNeural_str.append("| "+ativouCamadaAssociativa+" ");
 			ativacaoNeural_str.append("|=> ");
 			for(int j=0;j<saida.length;j++)
 				ativacaoNeural_str.append(String.valueOf((int)saida[j])+" ");
 			ativacaoNeural_str.append("\n");
 			
 			int j = -1;
-			if(ativouCamadaEscandida) {
+			if(ativouCamadaEscondida) {
 				j = posMaximo(saidaEscondida);
 				//montagem grafico
 				if(i < 43) { //pequeno
