@@ -98,6 +98,22 @@ public class Populacao {
 				ativacaoNeural_str.append("Direita\n");
 			if(i == 129)
 				ativacaoNeural_str.append("Esquerda\n");
+			if(i == 172)
+				ativacaoNeural_str.append("Direita\n");
+			if(i == 215)
+				ativacaoNeural_str.append("Esquerda\n");
+			if(i == 258)
+				ativacaoNeural_str.append("Direita\n");
+			if(i == 301)
+				ativacaoNeural_str.append("Esquerda\n");
+			if(i == 344)
+				ativacaoNeural_str.append("Direita\n");
+			if(i == 387)
+				ativacaoNeural_str.append("Esquerda\n");
+			if(i == 430)
+				ativacaoNeural_str.append("Direita\n");
+			if(i == 473)
+				ativacaoNeural_str.append("Esquerda\n");
 			
 			double[] saida = ind.atualizaRede(ds[i]);
 			double[] saidaEscondida = ind.ativacaoCamadaInter();
@@ -139,7 +155,23 @@ public class Populacao {
 					graAss[j]++;
 				} else if(i>85 && i<129) { //direita
 					dirAss[j]++;
-				} else { //esquerda
+				} else if(i>128 && i<172){ //esquerda
+					esqAss[j]++;
+				}else if(i>171 && i<215) { //direita
+					dirAss[j]++;
+				} else if(i>214 && i<258){ //esquerda
+					esqAss[j]++;
+				}else if(i>257 && i<301) { //direita
+					dirAss[j]++;
+				} else if(i>300 && i<344){ //esquerda
+					esqAss[j]++;
+				}else if(i>343 && i<387) { //direita
+					dirAss[j]++;
+				} else if(i>386 && i<430){ //esquerda
+					esqAss[j]++;
+				}else if(i>429 && i<473) { //direita
+					dirAss[j]++;
+				} else if(i>472){ //esquerda
 					esqAss[j]++;
 				}
 			}
