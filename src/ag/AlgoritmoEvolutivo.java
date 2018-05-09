@@ -100,7 +100,7 @@ public class AlgoritmoEvolutivo {
 			
 			if(Auxiliar.TREINO_COM_CICLOS)
 			{
-				if(cont == 50) { //treinar ciclo 1
+				if(cont == 51) { //treinar ciclo 1
 					this.leitor.setArquivo(Config.TREINO_CICLO_2);
 					Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
 					Auxiliar.CICLO_1 = false;
@@ -253,7 +253,7 @@ public class AlgoritmoEvolutivo {
 				neuronios = ind.getCamadaAssociativa();
 				for(Neuronio neuronio : neuronios) {
 					//altera pesos/bias do neuronio
-					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
+					if(rand.nextDouble() < Config.TAXA_MUTACAO/10) {
 						double[] pesos = new double[neuronio.getNumeroPesos()];
 						for(int i=0; i<neuronio.getNumeroPesos(); i++) {
 							pesos[i] = Auxiliar.truncate(Config.LIMITE_MIN + (rand.nextDouble() * (Config.LIMITE_MAX - Config.LIMITE_MIN)));

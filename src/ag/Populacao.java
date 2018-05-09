@@ -310,7 +310,7 @@ public class Populacao {
 				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0)
                     fitness += 1;
 				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 0)
-                    continue;
+					continue;
 				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 1)
                     fitness -= 1;
 				else if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 1)
@@ -319,7 +319,7 @@ public class Populacao {
 				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 1)
                     fitness += 1;
 				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 0)
-                    continue;
+					continue;
 				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 0)
                     fitness -= 1;
 				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 1)
