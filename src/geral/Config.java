@@ -21,20 +21,20 @@ public class Config {
 	public static int NUMERO_CASOS = 8; //4 tipos de entrada vezes (camada ass + camada inter)
 	
 	//objeto pequeno centralizado
-	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\4\\treino.csv";
-	//public static String TREINO_CICLO_1 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\4\\tamanho_vazado.csv";
-	//public static String TREINO_CICLO_2 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\4\\treino.csv";
+	public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\4\\treino.csv";
+	public static String TREINO_CICLO_1 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\4\\tamanho_vazado.csv";
+	public static String TREINO_CICLO_2 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\4\\treino.csv";
 	//objeto pequeno vazado com ruido
 	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\3\\treino_ciclo_2.csv";
 	//public static String TREINO_CICLO_1 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\3\\tamanho_2.csv";
 	//public static String TREINO_CICLO_2 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\3\\treino_ciclo_2.csv";
 	//objeto pequeno e grande vazado sem ruido
-	public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\treino.csv";
-	public static String TREINO_CICLO_1 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\tamanho_vazado.csv";
-	public static String TREINO_CICLO_2 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\treino.csv";
+	//public static String NOME_ARQUIVO = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\treino.csv";
+	//public static String TREINO_CICLO_1 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\tamanho_vazado.csv";
+	//public static String TREINO_CICLO_2 = "C:\\Users\\Moab\\Documents\\Projetos\\RedeNeural\\dados\\2\\treino.csv";
 	
 	public static final Random random = new Random(SEMENTE);
-	public static final double MAX_FITNESS = 172;
+	public static final double MAX_FITNESS = 516;
 	
 	public static boolean RECORRENCIA_ENTRADA = true;
 	public static boolean RECORRENCIA_ENTRADA_FIXA = false;
@@ -42,7 +42,8 @@ public class Config {
 	public static boolean USAR_BIAS = false;
 	public static final boolean WTA = true;
 	public static boolean ATIVACAO_GERAL = false;
-	public static double VALOR_TAU_FIXO = 0.7;
+	public static double VALOR_TAU_FIXO = 0.2;
 	public static double LIMITE_MIN_TAU = 0;
 	public static double LIMITE_MAX_TAU = 1;
+	public static boolean USAR_DUPLA_ENTRADA = true;
 }

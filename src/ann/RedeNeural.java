@@ -37,17 +37,27 @@ public class RedeNeural {
 		}
 		
 		//criação de camada de entrada binaria
-		camadaEntradaBinaria = new Neuronio[3];
-		for(int i=0; i<3; i++) {
+		int tam = 3;
+		camadaEntradaBinaria = new Neuronio[tam];
+		for(int i=0; i<tam; i++) {
 			this.camadaEntradaBinaria[i] = new Neuronio(false);
 			this.camadaEntradaBinaria[i].setTipoCamada(0);
 		}
 		
 		//criacao da camada intermediaria
-		this.camadaEscondida = new Neuronio[n_neuronios];
-		for(int i=0; i<n_neuronios; i++)
-			this.camadaEscondida[i] = new Neuronio(camadaEntradaBinaria.length+n_n_associativa, tipo_funcao_ativacao,
-					Config.RECORRENCIA_OUTROS, 1);
+		if(Config.USAR_DUPLA_ENTRADA) {
+			this.camadaEscondida = new Neuronio[n_neuronios];
+			for(int i=0; i<n_neuronios; i++)
+				this.camadaEscondida[i] = new Neuronio(camadaEntradaBinaria.length+n_n_associativa, tipo_funcao_ativacao,
+						Config.RECORRENCIA_OUTROS, 1);
+		} else {
+			this.camadaEscondida = new Neuronio[n_neuronios];
+			for(int i=0; i<n_neuronios; i++)
+				this.camadaEscondida[i] = new Neuronio(camadaEntrada.length+n_n_associativa, tipo_funcao_ativacao,
+						Config.RECORRENCIA_OUTROS, 1);
+		}
+		
+		
 		//criacao da camada intermediaria ASSOCIATIVA
 		this.camadaAssociativa = new Neuronio[n_n_associativa];
 		for(int i=0; i<n_n_associativa; i++)
@@ -66,11 +76,19 @@ public class RedeNeural {
 			saidaDaEntrada[i] = camadaEntrada[i].ativado(entradas[i]);
 		}
 		
-		//obtem saidas da camada de entrada		
-		double saidaDaEntradaBinaria[] = new double[3];
-		saidaDaEntradaBinaria[0] = camadaEntradaBinaria[0].ativado(entradas[0]);
-		saidaDaEntradaBinaria[1] = camadaEntradaBinaria[1].ativado(entradas[3]);
-		saidaDaEntradaBinaria[2] = camadaEntradaBinaria[2].ativado(entradas[6]);
+		//obtem saidas da camada de entrada
+		double saidaDaEntradaBinaria[] = null;
+		if(camadaEntradaBinaria.length == 3) {
+			saidaDaEntradaBinaria = new double[3];
+			saidaDaEntradaBinaria[0] = camadaEntradaBinaria[0].ativado(entradas[0]);
+			saidaDaEntradaBinaria[1] = camadaEntradaBinaria[1].ativado(entradas[3]);
+			saidaDaEntradaBinaria[2] = camadaEntradaBinaria[2].ativado(entradas[6]);
+		} else {
+			saidaDaEntradaBinaria = new double[camadaEntradaBinaria.length];
+			for(int i=0; i<camadaEntradaBinaria.length; i++) {
+				saidaDaEntrada[i] = camadaEntradaBinaria[i].ativado(entradas[i]);
+			}
+		}
 		
 		//obtem saidas da camada associativa
 		associativaAtivou = false;
@@ -111,61 +129,119 @@ public class RedeNeural {
 		}
 		
 		
-		
-		//obtem saidas da camada escondida
-		this.escondidaAtivou = false;
-		/*
-		 * A entrada da camada escondida é composta pelas entradas da camada de entrada
-		 * e entradas da camada associativa. A camada escondida so leva em conta os resultados
-		 * da camada associativa se Auxiliar.USAR_CAMADA_ASSOCIATIVA estiver ativo (true).
-		 */
-		saidaEscondida= new double[this.camadaEscondida.length];
-		double[] entradaCamadaEscondida = new double[saidaDaEntradaBinaria.length + saidaAssociativa.length];
-		for(int i=0;i<entradaCamadaEscondida.length;i++)
-			entradaCamadaEscondida[i] = 0;
-		
-		//prepara entrada da camada escondida
-        if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) { //entrada composta por: entrada + associativa
-        	if(associativaAtivou) {
-        		for(int i=0;i<saidaDaEntradaBinaria.length;i++)
-        			saidaDaEntradaBinaria[i] = 0;
-        		System.arraycopy(saidaDaEntradaBinaria, 0, entradaCamadaEscondida, 0, saidaDaEntradaBinaria.length);
-        		System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntradaBinaria.length, saidaAssociativa.length);
-        	} else {
-        		System.arraycopy(saidaDaEntradaBinaria, 0, entradaCamadaEscondida, 0, saidaDaEntradaBinaria.length);
-            	for(int i=0;i<saidaAssociativa.length;i++)
-            		saidaAssociativa[i] = 0;
-            	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntradaBinaria.length, saidaAssociativa.length);
-        	}
-        } else {
-        	System.arraycopy(saidaDaEntradaBinaria, 0, entradaCamadaEscondida, 0, saidaDaEntradaBinaria.length);
-        	for(int i=0;i<saidaAssociativa.length;i++)
-        		saidaAssociativa[i] = 0;
-        	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntradaBinaria.length, saidaAssociativa.length);
-        }
-        //fornece entradas para a camada intermediaria
-        for(int i=0; i<camadaEscondida.length; i++) {
-			saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
-		}
-		
-		if(Config.WTA) {
-			double maior = saidaEscondida[0];
-			int index = 0;
-			for(int i=1; i<saidaEscondida.length; i++) {
-				if(saidaEscondida[i] > maior) {
-					maior = saidaEscondida[i];
-					saidaEscondida[index] = 0;
-					index = i;
-				} else {
-					saidaEscondida[i] = 0;
-				}
+		if(!Config.USAR_DUPLA_ENTRADA){
+			//obtem saidas da camada escondida
+			this.escondidaAtivou = false;
+			/*
+			 * A entrada da camada escondida é composta pelas entradas da camada de entrada
+			 * e entradas da camada associativa. A camada escondida so leva em conta os resultados
+			 * da camada associativa se Auxiliar.USAR_CAMADA_ASSOCIATIVA estiver ativo (true).
+			 */
+			saidaEscondida= new double[this.camadaEscondida.length];
+			double[] entradaCamadaEscondida = new double[camadaEntrada.length + saidaAssociativa.length];
+			for(int i=0;i<entradaCamadaEscondida.length;i++)
+				entradaCamadaEscondida[i] = 0;
+			
+			//prepara entrada da camada escondida
+	        if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) { //entrada composta por: entrada + associativa
+	        	if(associativaAtivou) {
+	        		for(int i=0;i<saidaDaEntrada.length;i++)
+	        			saidaDaEntrada[i] = 0;
+	        		System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+	        		System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
+	        	} else {
+	        		System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+	            	for(int i=0;i<saidaAssociativa.length;i++)
+	            		saidaAssociativa[i] = 0;
+	            	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
+	        	}
+	        } else {
+	        	System.arraycopy(saidaDaEntrada, 0, entradaCamadaEscondida, 0, saidaDaEntrada.length);
+	        	for(int i=0;i<saidaAssociativa.length;i++)
+	        		saidaAssociativa[i] = 0;
+	        	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
+	        }
+	        //fornece entradas para a camada intermediaria
+	        for(int i=0; i<camadaEscondida.length; i++) {
+				saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
 			}
 			
-			if(saidaEscondida[index] >= 0) {
-				saidaEscondida[index] = 1;
-				escondidaAtivou = true;
-			} else {
-				saidaEscondida[index] = 0;
+			if(Config.WTA) {
+				double maior = saidaEscondida[0];
+				int index = 0;
+				for(int i=1; i<saidaEscondida.length; i++) {
+					if(saidaEscondida[i] > maior) {
+						maior = saidaEscondida[i];
+						saidaEscondida[index] = 0;
+						index = i;
+					} else {
+						saidaEscondida[i] = 0;
+					}
+				}
+				
+				if(saidaEscondida[index] >= 0) {
+					saidaEscondida[index] = 1;
+					escondidaAtivou = true;
+				} else {
+					saidaEscondida[index] = 0;
+				}
+			}
+		} else {
+			//obtem saidas da camada escondida
+			this.escondidaAtivou = false;
+			/*
+			 * A entrada da camada escondida é composta pelas entradas da camada de entrada
+			 * e entradas da camada associativa. A camada escondida so leva em conta os resultados
+			 * da camada associativa se Auxiliar.USAR_CAMADA_ASSOCIATIVA estiver ativo (true).
+			 */
+			saidaEscondida= new double[this.camadaEscondida.length];
+			double[] entradaCamadaEscondida = new double[saidaDaEntradaBinaria.length + saidaAssociativa.length];
+			for(int i=0;i<entradaCamadaEscondida.length;i++)
+				entradaCamadaEscondida[i] = 0;
+			
+			//prepara entrada da camada escondida
+	        if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) { //entrada composta por: entrada + associativa
+	        	if(associativaAtivou) {
+	        		for(int i=0;i<saidaDaEntradaBinaria.length;i++)
+	        			saidaDaEntradaBinaria[i] = 0;
+	        		System.arraycopy(saidaDaEntradaBinaria, 0, entradaCamadaEscondida, 0, saidaDaEntradaBinaria.length);
+	        		System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntradaBinaria.length, saidaAssociativa.length);
+	        	} else {
+	        		System.arraycopy(saidaDaEntradaBinaria, 0, entradaCamadaEscondida, 0, saidaDaEntradaBinaria.length);
+	            	for(int i=0;i<saidaAssociativa.length;i++)
+	            		saidaAssociativa[i] = 0;
+	            	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntradaBinaria.length, saidaAssociativa.length);
+	        	}
+	        } else {
+	        	System.arraycopy(saidaDaEntradaBinaria, 0, entradaCamadaEscondida, 0, saidaDaEntradaBinaria.length);
+	        	for(int i=0;i<saidaAssociativa.length;i++)
+	        		saidaAssociativa[i] = 0;
+	        	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntradaBinaria.length, saidaAssociativa.length);
+	        }
+	        //fornece entradas para a camada intermediaria
+	        for(int i=0; i<camadaEscondida.length; i++) {
+				saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
+			}
+			
+			if(Config.WTA) {
+				double maior = saidaEscondida[0];
+				int index = 0;
+				for(int i=1; i<saidaEscondida.length; i++) {
+					if(saidaEscondida[i] > maior) {
+						maior = saidaEscondida[i];
+						saidaEscondida[index] = 0;
+						index = i;
+					} else {
+						saidaEscondida[i] = 0;
+					}
+				}
+				
+				if(saidaEscondida[index] >= 0) {
+					saidaEscondida[index] = 1;
+					escondidaAtivou = true;
+				} else {
+					saidaEscondida[index] = 0;
+				}
 			}
 		}
 		

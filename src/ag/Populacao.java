@@ -142,7 +142,23 @@ public class Populacao {
 					graInter[j]++;
 				} else if(i>85 && i<129) { //direita
 					dirInter[j]++;
-				} else { //esquerda
+				} else if(i>128 && i<172){ //esquerda
+					esqInter[j]++;
+				}else if(i>171 && i<215) { //direita
+					dirInter[j]++;
+				} else if(i>214 && i<258){ //esquerda
+					esqInter[j]++;
+				}else if(i>257 && i<301) { //direita
+					dirInter[j]++;
+				} else if(i>300 && i<344){ //esquerda
+					esqInter[j]++;
+				}else if(i>343 && i<387) { //direita
+					dirInter[j]++;
+				} else if(i>386 && i<430){ //esquerda
+					esqInter[j]++;
+				}else if(i>429 && i<473) { //direita
+					dirInter[j]++;
+				} else if(i>472){ //esquerda
 					esqInter[j]++;
 				}
 			}
