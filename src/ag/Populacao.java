@@ -90,32 +90,73 @@ public class Populacao {
 				entradaAnt = ds[i][7];
 			}
 			
-			if(i == 0)
-				ativacaoNeural_str.append("Pequeno\n");
-			if(i == 43)
-				ativacaoNeural_str.append("Grande\n");
-			if(i == 86)
-				ativacaoNeural_str.append("Direita\n");
-			if(i == 129)
-				ativacaoNeural_str.append("Esquerda\n");
-			if(i == 172)
-				ativacaoNeural_str.append("Direita\n");
-			if(i == 215)
-				ativacaoNeural_str.append("Esquerda\n");
-			if(i == 258)
-				ativacaoNeural_str.append("Direita\n");
-			if(i == 301)
-				ativacaoNeural_str.append("Esquerda\n");
-			if(i == 344)
-				ativacaoNeural_str.append("Direita\n");
-			if(i == 387)
-				ativacaoNeural_str.append("Esquerda\n");
-			if(i == 430)
-				ativacaoNeural_str.append("Direita\n");
-			if(i == 473)
-				ativacaoNeural_str.append("Esquerda\n");
 			
-			double[] saida = ind.atualizaRede(ds[i]);
+			if(Config.TIPO_ARQUIVO == 2) {
+				if(i == 0)
+					ativacaoNeural_str.append("Objeto 3\n");
+				if(i == 43)
+					ativacaoNeural_str.append("Ruído - Objeto 1\n");
+				if(i == 86)
+					ativacaoNeural_str.append("Objeto 2\n");
+				if(i == 129)
+					ativacaoNeural_str.append("Direita\n");
+				if(i == 172)
+					ativacaoNeural_str.append("Esquerda\n");
+			} else if(Config.TIPO_ARQUIVO == 1 || Config.TIPO_ARQUIVO == 4){
+				if(i == 0)
+					ativacaoNeural_str.append("OBJ3\n");
+				if(i == 43)
+					ativacaoNeural_str.append("OBJ2\n");
+				if(i == 86)
+					ativacaoNeural_str.append("Direita\n");
+				if(i == 129)
+					ativacaoNeural_str.append("Esquerda\n");
+			} else if(Config.TIPO_ARQUIVO == 3) {
+				if(i == 0)
+					ativacaoNeural_str.append("Ruído (Objeto 4) \n");
+				if(i == 43)
+					ativacaoNeural_str.append("Alvo (Objeto 3)\n");
+				if(i == 86)
+					ativacaoNeural_str.append("Ruído (Objeto 1)\n");
+				if(i == 129)
+					ativacaoNeural_str.append("Alvo (Objeto 2)\n");
+				if(i == 172)
+					ativacaoNeural_str.append("Ruído (Objeto 5)\n");
+				if(i == 215)
+					ativacaoNeural_str.append("Movimento Direita\n");
+				if(i == 258)
+					ativacaoNeural_str.append("Movimento Esquerda\n");
+			} else if(Config.TIPO_ARQUIVO == 5) {
+				if(i == 0)
+					ativacaoNeural_str.append("Ruído (Objeto 4) \n");
+				if(i == 43)
+					ativacaoNeural_str.append("Alvo (Objeto 3)\n");
+				if(i == 86)
+					ativacaoNeural_str.append("Ruído (Objeto 1)\n");
+				if(i == 129)
+					ativacaoNeural_str.append("Alvo (Objeto 2)\n");
+				if(i == 172)
+					ativacaoNeural_str.append("Movimento Direita\n");
+				if(i == 215)
+					ativacaoNeural_str.append("Movimento Esquerda\n");
+			} else if(Config.TIPO_ARQUIVO == 6) {
+				if(i == 0)
+					ativacaoNeural_str.append("Objeto 4 \n");
+				if(i == 43)
+					ativacaoNeural_str.append("Objeto 2 (Ruido)\n");
+				if(i == 86)
+					ativacaoNeural_str.append("Objeto 3\n");
+				if(i == 129)
+					ativacaoNeural_str.append("Movimento Direita\n");
+				if(i == 172)
+					ativacaoNeural_str.append("Movimento Esquerda\n");
+			}
+			
+			
+			
+			
+			
+			double[] saida = ind.atualizaRede(ds[i], i);
 			double[] saidaEscondida = ind.ativacaoCamadaInter();
 			double[] saidaAssociativa = ind.ativacaoCamadaAssociativa();
 			boolean ativouCamadaAssociativa = ind.ativouCamadaAssociativa();
@@ -132,47 +173,140 @@ public class Populacao {
 				ativacaoNeural_str.append(String.valueOf((int)saida[j])+" ");
 			ativacaoNeural_str.append("\n");
 			
-			int j = -1;
-			if(ativouCamadaEscondida) {
-				j = posMaximo(saidaEscondida);
-				//montagem grafico
-				if(i < 43) { //pequeno
-					peqInter[j]++;
-				} else if(i>42 && i<86) { //grande
-					graInter[j]++;
-				} else if(i>85 && i<129) { //direita
-					dirInter[j]++;
-				} else { //esquerda
-					esqInter[j]++;
+			if(Config.TIPO_ARQUIVO == 1) { //2 objetos
+				int j = -1;
+				if(ativouCamadaEscondida) {
+					j = posMaximo(saidaEscondida);
+					//montagem grafico
+					if(i < 43) { //pequeno
+						peqInter[j]++;
+					} else if(i>42 && i<86) { //grande
+						graInter[j]++;
+					} else if(i>85 && i<129) { //direita
+						dirInter[j]++;
+					} else { //esquerda
+						esqInter[j]++;
+					}
 				}
-			}
-			//montagem grafico
-			if(ativouCamadaAssociativa) {
-				j = posMaximo(saidaAssociativa);
-				if(i < 43) { //pequeno
-					peqAss[j]++;
-				} else if(i>42 && i<86) { //grande
-					graAss[j]++;
-				} else if(i>85 && i<129) { //direita
-					dirAss[j]++;
-				} else if(i>128 && i<172){ //esquerda
-					esqAss[j]++;
-				}else if(i>171 && i<215) { //direita
-					dirAss[j]++;
-				} else if(i>214 && i<258){ //esquerda
-					esqAss[j]++;
-				}else if(i>257 && i<301) { //direita
-					dirAss[j]++;
-				} else if(i>300 && i<344){ //esquerda
-					esqAss[j]++;
-				}else if(i>343 && i<387) { //direita
-					dirAss[j]++;
-				} else if(i>386 && i<430){ //esquerda
-					esqAss[j]++;
-				}else if(i>429 && i<473) { //direita
-					dirAss[j]++;
-				} else if(i>472){ //esquerda
-					esqAss[j]++;
+				//montagem grafico
+				if(ativouCamadaAssociativa) {
+					j = posMaximo(saidaAssociativa);
+					if(i < 43) { //pequeno
+						peqAss[j]++;
+					} else if(i>42 && i<86) { //grande
+						graAss[j]++;
+					} else if(i>85 && i<129) { //direita
+						dirAss[j]++;
+					} else if(i>128 && i<172){ //esquerda
+						esqAss[j]++;
+					
+					}
+				}
+			} else if(Config.TIPO_ARQUIVO == 2 || Config.TIPO_ARQUIVO == 6){ //3 objetos
+				int j = -1;
+				if(ativouCamadaEscondida) {
+					j = posMaximo(saidaEscondida);
+					//montagem grafico
+					if(i < 43) { //pequeno
+						peqInter[j]++;
+					} else if(i>85 && i<129) { //grande
+						graInter[j]++;
+					} else if(i>128 && i<172) { //direita
+						dirInter[j]++;
+					} else if (i>171){ //esquerda
+						esqInter[j]++;
+					}
+				}
+				//montagem grafico
+				if(ativouCamadaAssociativa) {
+					j = posMaximo(saidaAssociativa);
+					if(i < 43) { //pequeno
+						peqAss[j]++;
+					} else if(i>85 && i<129) { //grande
+						graAss[j]++;
+					} else if(i>128 && i<172) { //direita
+						dirAss[j]++;
+					} else if (i>171){ //esquerda
+						esqAss[j]++;
+					}
+				}
+			} else if(Config.TIPO_ARQUIVO == 3) { //5 objetos
+				int j = -1;
+				if(ativouCamadaEscondida) {
+					j = posMaximo(saidaEscondida);
+					//montagem grafico
+					if(i < 43) { //ruído obj4
+						
+					} else if(i>42 && i<86) { //alvo-obj3
+						peqInter[j]++;
+					} else if(i>85 && i<129) { //rúido-obj1
+						
+					} else if(i>128 && i<172){ //alvo-obj2
+						graInter[j]++;
+					} else if(i>171 && i<215){ //ruído-obj5
+						
+					} else if(i>214 && i<258){ //mov_direita
+						dirInter[j]++;
+					} else if(i>257 && i<301){ //mov_esq
+						esqInter[j]++;
+					}
+				}
+				//montagem grafico
+				if(ativouCamadaAssociativa) {
+					j = posMaximo(saidaAssociativa);
+					//montagem grafico
+					if(i < 43) { //ruído obj4
+						
+					} else if(i>42 && i<86) { //alvo-obj3
+						peqAss[j]++;
+					} else if(i>85 && i<129) { //rúido-obj1
+						
+					} else if(i>128 && i<172){ //alvo-obj2
+						graAss[j]++;
+					} else if(i>171 && i<215){ //ruído-obj5
+						
+					} else if(i>214 && i<258){ //mov_direita
+						dirAss[j]++;
+					} else if(i>257 && i<301){ //mov_esq
+						esqAss[j]++;
+					}
+				}
+			} else if(Config.TIPO_ARQUIVO == 5) { //4 objetos
+				int j = -1;
+				if(ativouCamadaEscondida) {
+					j = posMaximo(saidaEscondida);
+					//montagem grafico
+					if(i < 43) { //ruído obj4
+						
+					} else if(i>42 && i<86) { //alvo-obj3
+						peqInter[j]++;
+					} else if(i>85 && i<129) { //rúido-obj1
+						
+					} else if(i>128 && i<172){ //alvo-obj2
+						graInter[j]++;
+					} else if(i>171 && i<215){ //mov_direita
+						dirInter[j]++;
+					} else if(i>214 && i<258){ //mov_esq
+						esqInter[j]++;
+					}
+				}
+				//montagem grafico
+				if(ativouCamadaAssociativa) {
+					j = posMaximo(saidaAssociativa);
+					//montagem grafico
+					if(i < 43) { //ruído obj4
+						
+					} else if(i>42 && i<86) { //alvo-obj3
+						peqAss[j]++;
+					} else if(i>85 && i<129) { //rúido-obj1
+						
+					} else if(i>128 && i<172){ //alvo-obj2
+						graAss[j]++;
+					} else if(i>171 && i<215){ //mov_direita
+						dirAss[j]++;
+					} else if(i>214 && i<258){ //mov_esq
+						esqAss[j]++;
+					}
 				}
 			}
 			
@@ -237,44 +371,6 @@ public class Populacao {
 		throw new Exception("WTA nÃ£o funcionou, verifique o mÃ©todo posMaximo em PopulaÃ§Ã£o!!");
 	}
 	
-	public void calcularFitness1Saida(double[][] entradas, int q_linhas, int epoca) throws Exception {
-		double entradaAnt = entradas[0][7];
-		int qntInd = 0;
-		Geracao g = new Geracao();
-		for(Individuo ind : individuos) {
-			//para documentacao
-			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
-			ind.reiniciaRecorrencia();
-			int fitness = 0;
-			for(int i=0; i<q_linhas; i++) {
-				if(entradaAnt != entradas[i][7]) {
-					ind.reiniciaRecorrencia();
-					entradaAnt = entradas[i][7];
-				}
-				
-				double[] saida = ind.atualizaRede(entradas[i]);
-				@SuppressWarnings("unused")
-				double[] saidaEscondida = ind.ativacaoCamadaInter();
-				
-				//centro
-				if (entradas[i][7] == 0 && saida[0] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 0 && saida[0] != 0)
-                    fitness -= 1;
-				else if (entradas[i][7] == 1 && saida[0] == 1)
-                    fitness += 1;
-				else if (entradas[i][7] == 1 && saida[0] != 1)
-                    fitness -= 1;
-				
-				//para registro
-				if(Config.ATIVACAO_GERAL)
-					this.gerarAtivacaoPopulacao(saida, saidaEscondida, i, qntInd, epoca, g);
-				
-			}
-			ind.setFitness(fitness);
-			qntInd++;
-		}
-	}
 	
 	/**
 	 * O individuo Ã© classificado(fitness) de acordo com a resposta.
@@ -295,12 +391,18 @@ public class Populacao {
 			double fitness = 0;
 			double[] saida;
 			for(int i=0; i<q_linhas; i++) {
+				try {
 				if(entradaAnt != entradas[i][7]) {
 					ind.reiniciaRecorrencia();
 					entradaAnt = entradas[i][7];
 				}
+				} catch(Exception e)
+				{
+					e.printStackTrace();
+					System.out.print(entradas[i][7]);
+				}
 				
-				saida = ind.atualizaRede(entradas[i]);
+				saida = ind.atualizaRede(entradas[i], i);
 				@SuppressWarnings("unused")
 				double[] saidaEscondida = ind.ativacaoCamadaInter();
 				double fitnessAnt = fitness;
@@ -310,7 +412,7 @@ public class Populacao {
 				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0)
                     fitness += 1;
 				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 0)
-                    continue;
+					continue;
 				else if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 1)
                     fitness -= 1;
 				else if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 1)
@@ -319,128 +421,41 @@ public class Populacao {
 				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 1)
                     fitness += 1;
 				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 0)
-                    continue;
+					continue;
 				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 0)
                     fitness -= 1;
 				else if (entradas[i][7] == 1 && saida[0] == 1 && saida[1] == 1)
                     fitness -= 1;
+				//ruído
+				else if (entradas[i][7] == 2 && saida[0] == 0 && saida[1] == 1)
+                    fitness -= 1;
+				else if (entradas[i][7] == 2 && saida[0] == 0 && saida[1] == 0)
+                    continue;
+				else if (entradas[i][7] == 2 && saida[0] == 1 && saida[1] == 0)
+                    fitness -= 1;
+				else if (entradas[i][7] == 2 && saida[0] == 1 && saida[1] == 1)
+                    fitness -= 1;
 				
-				//para registro
-				if(Config.ATIVACAO_GERAL)
-					this.gerarAtivacaoPopulacao(saida, saidaEscondida, i, qntInd, epoca, g);
-			}
-			ind.setFitness(fitness);
-			qntInd++;
-		}
-	}
-	
-	/**
-	 * Este mÃ©todo Ã© usado para o cÃ¡lculo de fitness
-	 * quando usado tamanho e movimento ao mesmo tempo
-	 * @param entradas
-	 * @param q_linhas
-	 * @throws Exception 
-	 */
-	public void calcularFitness3Saida(double[][] entradas, int q_linhas, int epoca) throws Exception {
-		double entradaAnt = entradas[0][7];
-		int qntInd = 0;
-		Geracao g = new Geracao();
-		for(Individuo ind : individuos) {
-			ind.reiniciaRecorrencia();
-			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
-			int fitness = 0;
-			double[] saida;
-			for(int i=0; i<q_linhas; i++) {
-				if(entradaAnt != entradas[i][7]) {
-					ind.reiniciaRecorrencia();
-					entradaAnt = entradas[i][7];
+				/*
+				//---------TESTE-----------------
+				if(ind.ativouCamadaEscondida()) {
+					//montagem grafico
+					if(i < 43 || (i>85 && i<129)) { //pequeno
+						continue;
+					} else { //direita
+						fitness--;
+					}
 				}
-				
-				saida = ind.atualizaRede(entradas[i]);
-				@SuppressWarnings("unused")
-				double[] saidaEscondida = ind.ativacaoCamadaInter();
-				
-				//centro
-				if (entradas[i][7] == 0 && saida[0] == 0 && saida[1] == 0 && saida[2] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 0 && saida[0] != 0 && saida[1] != 0 && saida[2] != 0)
-                    fitness -= 1;
-				//movimento
-				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 0 && saida[2] == 1)
-                    fitness += 1;
-				else if (entradas[i][7] == 1 && saida[0] != 0 && saida[1] != 0 && saida[2] != 1)
-                    fitness -= 1;
-				//movimento
-				else if (entradas[i][7] == 2 && saida[0] == 0 && saida[1] == 1 && saida[2] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 2 && saida[0] != 0 && saida[1] != 1 && saida[2] != 0)
-                    fitness -= 1;
-				//grande
-				else if (entradas[i][7] == 3 && saida[0] == 0 && saida[1] == 1 && saida[2] == 1)
-                    fitness += 1;
-				else if (entradas[i][7] == 3 && saida[0] != 0 && saida[1] != 1 && saida[2] != 1)
-                    fitness -= 1;
-				//pequeno
-				else if (entradas[i][7] == 4 && saida[0] == 1 && saida[1] == 0 && saida[2] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 4 && saida[0] != 1 && saida[1] != 0 && saida[2] != 0)
-                    fitness -= 1;
-				
-				//para registro
-				if(Config.ATIVACAO_GERAL)
-					this.gerarAtivacaoPopulacao(saida, saidaEscondida, i, qntInd, epoca, g);
-			}
-			ind.setFitness(fitness);
-			qntInd++;
-		}
-	}
-	
-	/**
-	 * Este mÃ©todo Ã© usado para o cÃ¡lculo de fitness
-	 * quando usado tamanho e movimento ao mesmo tempo
-	 * @param entradas
-	 * @param q_linhas
-	 * @throws Exception 
-	 */
-	public void calcularFitness4Saida(double[][] entradas, int q_linhas, int epoca) throws Exception {
-		double entradaAnt = entradas[0][7];
-		int qntInd = 0;
-		Geracao g = new Geracao();
-		for(Individuo ind : individuos) {
-			ind.reiniciaRecorrencia();
-			//this.historico.neuroniosAtivos.append("\nIndividuo "+qntInd+"\n");
-			int fitness = 0;
-			double[] saida;
-			for(int i=0; i<q_linhas; i++) {
-				if(entradaAnt != entradas[i][7]) {
-					ind.reiniciaRecorrencia();
-					entradaAnt = entradas[i][7];
+				//montagem grafico
+				if(ind.ativouCamadaAssociativa()) {
+					if(i < 129) { //pequeno
+						fitness--;
+					} else { //grande
+						continue;
+					}
 				}
-				
-				saida = ind.atualizaRede(entradas[i]);
-				@SuppressWarnings("unused")
-				double[] saidaEscondida = ind.ativacaoCamadaInter();
-				
-				//direita
-				if (entradas[i][7] == 0 && saida[0] == 1 && saida[1] == 0 && saida[2] == 0 && saida[3] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 0 && saida[0] != 1 && saida[1] != 0 && saida[2] != 0 && saida[3] != 0)
-                    fitness -= 1;
-				//esquerda
-				else if (entradas[i][7] == 1 && saida[0] == 0 && saida[1] == 1 && saida[2] == 0 && saida[3] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 1 && saida[0] != 0 && saida[1] != 1 && saida[2] != 0 && saida[3] != 0)
-                    fitness -= 1;
-				//pequeno
-				else if (entradas[i][7] == 2 && saida[0] == 0 && saida[1] == 0 && saida[2] == 1 && saida[3] == 0)
-                    fitness += 1;
-				else if (entradas[i][7] == 2 && saida[0] != 0 && saida[1] != 0 && saida[2] != 1 && saida[3] != 0)
-                    fitness -= 1;
-				//grande
-				else if (entradas[i][7] == 3 && saida[0] == 0 && saida[1] == 0 && saida[2] == 0 && saida[3] == 1)
-                    fitness += 1;
-				else if (entradas[i][7] == 3 && saida[0] != 0 && saida[1] != 0 && saida[2] != 0 && saida[3] != 1)
-                    fitness -= 1;
+				//----FIM-TESTE------------------
+				*/
 				
 				//para registro
 				if(Config.ATIVACAO_GERAL)
@@ -449,8 +464,7 @@ public class Populacao {
 			ind.setFitness(fitness);
 			qntInd++;
 		}
-	}
-	
+	}	
 	
 
 }

@@ -111,6 +111,8 @@ public class Neuronio {
 		soma = entrada + (somaAnt * tau);
 		if(recorrencia)
 			somaAnt = soma;
+		//if(recorrencia)
+		//	somaAnt = soma;
 		return soma;
 	}
 	
@@ -130,13 +132,8 @@ public class Neuronio {
 				return 1;
 			else
 				return 0;
-		} else if ( funcaoAtivacao == 3 ) {
-			if(entrada > 1)
-				entrada = 1;
-			else if (entrada < -1)
-				entrada = -1;
-			resposta = (entrada + 1)/2;
-			if(resposta > 0.5)
+		} else if ( funcaoAtivacao == 3 ) { //degrau
+			if(entrada >= 1)
 				return 1;
 			else
 				return 0;

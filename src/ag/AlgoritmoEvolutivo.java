@@ -25,11 +25,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Random;
 
-import org.apache.batik.dom.svg.SVGDOMImplementation;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.freehep.graphics2d.VectorGraphics;
-import org.freehep.graphicsio.pdf.PDFGraphics2D;
-import org.freehep.graphicsio.ps.PSGraphics2D;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -43,7 +39,6 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.xy.CategoryTableXYDataset;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
-import org.freehep.graphicsio.PageConstants;
 
 import ann.Neuronio;
 import geral.Auxiliar;
@@ -96,11 +91,11 @@ public class AlgoritmoEvolutivo {
 		this.leitor.obterArquivo();
 		
 		while(cont <= Config.N_MAX_GERACOES) {
-			this.gravarArq.println("Geração "+cont+"\n\n");
+			this.gravarArq.println("Gera��o "+cont+"\n\n");
 			
 			if(Auxiliar.TREINO_COM_CICLOS)
 			{
-				if(cont == 50) { //treinar ciclo 1
+				if(cont == 200) { //treinar ciclo 1
 					this.leitor.setArquivo(Config.TREINO_CICLO_2);
 					Auxiliar.USAR_CAMADA_ASSOCIATIVA = true;
 					Auxiliar.CICLO_1 = false;
@@ -110,15 +105,12 @@ public class AlgoritmoEvolutivo {
 			}
 			
 			//calcula o fitness de todos os individuos da população
-			if(Config.N_SAIDAS == 4) //para 4 saidas
-				this.populacao.calcularFitness4Saida(leitor.getEntradas(), leitor.q_linhas, cont);
-			else
-				this.populacao.calcularFitness2Saida(leitor.getEntradas(), leitor.q_linhas, cont);
+			this.populacao.calcularFitness2Saida(leitor.getEntradas(), this.leitor.q_linhas, cont);
 			//salva os dados
 			this.populacao.registrarLogs(gravarArq);
 			//adiciona o melhor na lista de melhores da geração
 			data.add(cont, this.populacao.getMelhorFitness(), "Melhor");
-			data.add(cont, this.populacao.getMediaFitnessPop(), "Média");
+			data.add(cont, this.populacao.getMediaFitnessPop(), "M�dia");
 			//seleciona os 10 melhores
 			this.populacao.selecionaMelhores();
 			
@@ -211,7 +203,7 @@ public class AlgoritmoEvolutivo {
 			//também é escolhida uma camada a ser alterada
 			Neuronio[] neuronios = null;
 			if(!Config.RECORRENCIA_ENTRADA_FIXA) { //permitido evoluir tau da camada de entrada se recorrencia_fixa for falso
-				neuronios = ind.getCamadaEntrada();
+				neuronios = ind.getCamadaEntradaRecorrente();
 				for(Neuronio neuronio : neuronios) {
 					if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 						double x = (Config.LIMITE_MIN_TAU + (rand.nextDouble() * (Config.LIMITE_MAX_TAU - Config.LIMITE_MIN_TAU)));
@@ -219,12 +211,13 @@ public class AlgoritmoEvolutivo {
 						neuronio.setTau(x);
 					}
 				}
-				ind.setCamadaEntrada(neuronios);
+				ind.setCamadaEntradaRecorrente(neuronios);
 			}
 			
 			//realiza mutação nos pesos dos neurônios da camada escondida
 			neuronios = ind.getCamadaEscondida();
 			for(Neuronio neuronio : neuronios) {
+				
 				//altera pesos/bias do neuronio
 				if(rand.nextDouble() < Config.TAXA_MUTACAO) {
 					double[] pesos = new double[neuronio.getNumeroPesos()];
@@ -312,7 +305,7 @@ public class AlgoritmoEvolutivo {
 		gravarArq.println();
 	}
 	
-	public void export(File name, JFreeChart chart, int x, int y, int tipo, Font font) {
+	/*public void export(File name, JFreeChart chart, int x, int y, int tipo, Font font) {
 		if(tipo == 1) { //SVG
 			// Get a DOMImplementation
 	        DOMImplementation domImpl = SVGDOMImplementation.getDOMImplementation();
@@ -365,7 +358,7 @@ public class AlgoritmoEvolutivo {
 			}
 		}
     }
-	 
+	 */
 	private void salvaGrafico(String str, int tipo_range) throws IOException
 	{
 		//configura cor, largura de linha
@@ -385,14 +378,14 @@ public class AlgoritmoEvolutivo {
 	    while (itr.hasNext()) {
 	        legendItems.add(itr.next());
 	    }
-	    /*
+	    
 	    //Reverse the order
 	    Collections.sort(legendItems, new Comparator<LegendItem>() {
 	        public int compare(LegendItem lhs, LegendItem rhs) {
 	            return rhs.getSeriesKey().compareTo(lhs.getSeriesKey());
 	        }
 	    });
-	    */
+	    
 	    LegendItemCollection newItems = new LegendItemCollection();
 	    for (LegendItem item : legendItems) {
 	    	item.setLabelFont(new Font("Dialog", Font.PLAIN, 18));

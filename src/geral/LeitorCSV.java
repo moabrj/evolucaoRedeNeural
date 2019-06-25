@@ -18,10 +18,11 @@ public class LeitorCSV {
         String cvsSplitBy = ",";
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-
         	
+        	String lineAux = line;
             while ((line = br.readLine()) != null) {
                 // use comma as separator
+            	lineAux = line;
                 String[] lido = line.split(cvsSplitBy);
                 dados.add(new Vetor(lido));
             }

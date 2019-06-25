@@ -10,6 +10,7 @@ import geral.Config;
 public class RedeNeural {
 
 	private Neuronio camadaEntrada[];
+	private Neuronio camadaEntradaRecorrente[];
 	private Neuronio camadaEscondida[];
 	private Neuronio camadaAssociativa[];
 	private Neuronio camadaSaida[];
@@ -30,10 +31,14 @@ public class RedeNeural {
 		
 		//criação da camada de entrada
 		this.camadaEntrada = new Neuronio[n_entradas];
+		this.camadaEntradaRecorrente = new Neuronio[n_entradas];
 		for(int i=0; i<n_entradas; i++) {
-			this.camadaEntrada[i] = new Neuronio(Config.RECORRENCIA_ENTRADA);
+			this.camadaEntrada[i] = new Neuronio(false);
+			this.camadaEntradaRecorrente[i] = new Neuronio(Config.RECORRENCIA_ENTRADA);
 			this.camadaEntrada[i].setTipoCamada(0);
+			this.camadaEntradaRecorrente[i].setTipoCamada(0);
 		}
+		
 		//criacao da camada intermediaria
 		this.camadaEscondida = new Neuronio[n_neuronios];
 		for(int i=0; i<n_neuronios; i++)
@@ -44,17 +49,23 @@ public class RedeNeural {
 		for(int i=0; i<n_n_associativa; i++)
 			this.camadaAssociativa[i] = new Neuronio(n_entradas, tipo_funcao_ativacao,
 					Config.RECORRENCIA_OUTROS, 2);
+		
 		//criacao da camada de saida
 		this.camadaSaida = new Neuronio[n_saidas];
 		for(int i=0; i<n_saidas; i++)
 			this.camadaSaida[i] = new Neuronio(n_neuronios, Config.FUNCAO_ATIVACAO_SAIDA, Config.RECORRENCIA_OUTROS, 3);
 	}
 	
-	public double[] calculaSaida(double[] entradas) throws Exception {
+	public double[] calculaSaida(double[] entradas, int input_count) throws Exception {
 		//obtem saidas da camada de entrada
 		double saidaDaEntrada[] = new double[entradas.length];
 		for(int i=0; i<camadaEntrada.length; i++) {
 			saidaDaEntrada[i] = camadaEntrada[i].ativado(entradas[i]);
+		}
+		//obtem saidas da camada de entrada recorrente
+		double saidaDaEntradaRecorrente[] = new double[entradas.length];
+		for(int i=0; i<camadaEntradaRecorrente.length; i++) {
+			saidaDaEntradaRecorrente[i] = camadaEntradaRecorrente[i].ativado(entradas[i]);
 		}
 		
 		//obtem saidas da camada associativa
@@ -62,7 +73,7 @@ public class RedeNeural {
 		saidaAssociativa = new double[camadaAssociativa.length];
 		if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) {
 			for(int i=0; i<camadaAssociativa.length; i++) {
-				saidaAssociativa[i] = camadaAssociativa[i].ativado(saidaDaEntrada);
+				saidaAssociativa[i] = camadaAssociativa[i].ativado(saidaDaEntradaRecorrente);
 			}
 			
 			//calcula o WTA
@@ -109,6 +120,9 @@ public class RedeNeural {
 		for(int i=0;i<entradaCamadaEscondida.length;i++)
 			entradaCamadaEscondida[i] = 0;
 		
+		if(Config.DUPLA_ENTRADA == false) //entrada simples
+			saidaDaEntrada = saidaDaEntradaRecorrente;
+			
 		//prepara entrada da camada escondida
         if(Auxiliar.USAR_CAMADA_ASSOCIATIVA) { //entrada composta por: entrada + associativa
         	if(associativaAtivou) {
@@ -128,6 +142,8 @@ public class RedeNeural {
         		saidaAssociativa[i] = 0;
         	System.arraycopy(saidaAssociativa, 0, entradaCamadaEscondida, saidaDaEntrada.length, saidaAssociativa.length);
         }
+		
+		
         //fornece entradas para a camada intermediaria
         for(int i=0; i<camadaEscondida.length; i++) {
 			saidaEscondida[i] = camadaEscondida[i].ativado(entradaCamadaEscondida); //entrada com resultados contabilizados
@@ -153,7 +169,7 @@ public class RedeNeural {
 				saidaEscondida[index] = 0;
 			}
 		}
-		
+
 		//obtem saidas da camada de saida
 		double saidaFinal[] = new double[camadaSaida.length];
 		for(int i=0; i<camadaSaida.length; i++) {
@@ -173,6 +189,10 @@ public class RedeNeural {
 	
 	public Neuronio[] getNeuroniosEntrada() throws Exception {
 		return copyCamada(this.camadaEntrada);
+	}
+	
+	public Neuronio[] getNeuroniosEntradaRecorrente() throws Exception {
+		return copyCamada(this.camadaEntradaRecorrente);
 	}
 	
 	public Neuronio[] getNeuroniosAssociativa() throws Exception {
@@ -207,6 +227,10 @@ public class RedeNeural {
 		this.camadaEntrada = camadaEntrada;
 	}
 	
+	public void setCamadaEntradaRecorrente(Neuronio[] camadaEntrada) {
+		this.camadaEntradaRecorrente = camadaEntrada;
+	}
+	
 	public void setCamadaAssociativa(Neuronio[] camadaAssociativa) {
 		this.camadaAssociativa = camadaAssociativa;
 	}
@@ -217,7 +241,7 @@ public class RedeNeural {
 	
 	public String toString() {
 		String strCamadaEntrada = "Camada de Entrada (TAUs): ";
-		for(Neuronio n : this.camadaEntrada) {
+		for(Neuronio n : this.camadaEntradaRecorrente) {
 			strCamadaEntrada+=" "+n.getTau();
 		}
 		
@@ -294,7 +318,7 @@ public class RedeNeural {
 	public void zerarValoresRecorrencia()
 	{
 		for(int i=0;i<camadaEntrada.length;i++) {
-			camadaEntrada[i].zeraValorRecorrente();
+			camadaEntradaRecorrente[i].zeraValorRecorrente();
 		}
 	}
 
